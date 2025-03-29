@@ -61,10 +61,12 @@ const DonationForm = () => {
       return;
     }
     
-    const numValue = parseFloat(value);
-    if (!isNaN(numValue)) {
-      const clampedValue = Math.min(Math.max(numValue, 0.01), 100);
-      setAmount(clampedValue);
+    if (/^[0-9]*\.?[0-9]*$/.test(value)) {
+      const numValue = parseFloat(value);
+      if (!isNaN(numValue)) {
+        const clampedValue = Math.min(Math.max(numValue, 0.01), 100);
+        setAmount(clampedValue);
+      }
     }
   };
 
@@ -173,19 +175,18 @@ const DonationForm = () => {
           <Label htmlFor="amount">Donation Amount (BNB)</Label>
           <div className="flex items-center gap-2 mb-2">
             <Input
-              type="number"
+              type="text"
               id="amount-input"
               value={amount}
               onChange={handleNumberInputChange}
-              min={0.01}
-              max={100}
-              step={0.01}
               className="w-full"
               onBlur={(e) => {
                 if (e.target.value === '' || isNaN(parseFloat(e.target.value))) {
                   setAmount(0.01);
                 }
               }}
+              pattern="[0-9]*\.?[0-9]*"
+              inputMode="decimal"
             />
             <span className="font-medium">BNB</span>
           </div>
