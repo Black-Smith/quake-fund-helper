@@ -145,7 +145,7 @@ export const useBlockchainData = (): BlockchainStats => {
     try {
       // Get incoming transactions (donations) from the start date
       const incomingResponse = await fetch(
-        `${BSCSCAN_API_URL}?module=account&action=txlist&address=${DONATION_ADDRESS}&startblock=0&endblock=99999999&starttime=${START_DATE_TIMESTAMP}&sort=desc&apikey=${BSCSCAN_API_KEY}`
+        `${BSCSCAN_API_URL}?module=account&action=txlist&address=${DONATION_ADDRESS}&startblock=0&endblock=99999999&page=1&offset=100&starttime=${START_DATE_TIMESTAMP}&endtime=9999999999&sort=desc&apikey=${BSCSCAN_API_KEY}`
       );
       
       if (!incomingResponse.ok) {
@@ -156,13 +156,19 @@ export const useBlockchainData = (): BlockchainStats => {
 
       if (incomingData.status === "1") {
         const transactions = incomingData.result;
-        setTotalDonations(calculateTotalDonations(transactions));
-        setDonorCount(getUniqueDonorsCount(transactions));
-        setRecentDonations(convertToTransactions(transactions));
+        
+        // Apply start date filter to ensure we're only processing transactions after March 29, 2025
+        const filteredTransactions = transactions.filter(tx => 
+          parseInt(tx.timeStamp) >= parseInt(START_DATE_TIMESTAMP)
+        );
+        
+        setTotalDonations(calculateTotalDonations(filteredTransactions));
+        setDonorCount(getUniqueDonorsCount(filteredTransactions));
+        setRecentDonations(convertToTransactions(filteredTransactions));
         
         // Get outgoing transactions (distributions) from the start date
         const outgoingResponse = await fetch(
-          `${BSCSCAN_API_URL}?module=account&action=txlist&address=${DONATION_ADDRESS}&startblock=0&endblock=99999999&starttime=${START_DATE_TIMESTAMP}&sort=desc&apikey=${BSCSCAN_API_KEY}`
+          `${BSCSCAN_API_URL}?module=account&action=txlist&address=${DONATION_ADDRESS}&startblock=0&endblock=99999999&page=1&offset=100&starttime=${START_DATE_TIMESTAMP}&endtime=9999999999&sort=desc&apikey=${BSCSCAN_API_KEY}`
         );
         
         if (!outgoingResponse.ok) {
@@ -172,8 +178,13 @@ export const useBlockchainData = (): BlockchainStats => {
         const outgoingData: BscScanResponse = await outgoingResponse.json();
         
         if (outgoingData.status === "1") {
-          setDistributedAmount(calculateDistributedAmount(outgoingData.result));
-          setRecentDistributions(convertToDistributions(outgoingData.result));
+          // Apply start date filter to ensure we're only processing transactions after March 29, 2025
+          const filteredOutgoingTransactions = outgoingData.result.filter(tx => 
+            parseInt(tx.timeStamp) >= parseInt(START_DATE_TIMESTAMP)
+          );
+          
+          setDistributedAmount(calculateDistributedAmount(filteredOutgoingTransactions));
+          setRecentDistributions(convertToDistributions(filteredOutgoingTransactions));
         } else {
           throw new Error(`BSCScan API error: ${outgoingData.message}`);
         }
