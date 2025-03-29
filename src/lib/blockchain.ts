@@ -1,4 +1,3 @@
-
 import { toast } from "@/hooks/use-toast";
 
 // Types for wallet connection
@@ -25,20 +24,20 @@ declare global {
   }
 }
 
-// BSC Mainnet configuration
-export const BSC_NETWORK = {
-  chainId: '0x38',  // 56 in decimal
-  chainName: 'Binance Smart Chain',
+// Sepolia Testnet configuration (replacing BSC Mainnet)
+export const SEPOLIA_NETWORK = {
+  chainId: '0xaa36a7', // 11155111 in decimal
+  chainName: 'Sepolia Testnet',
   nativeCurrency: {
-    name: 'BNB',
-    symbol: 'BNB',
+    name: 'ETH',
+    symbol: 'ETH',
     decimals: 18,
   },
-  rpcUrls: ['https://bsc-dataseed.binance.org/'],
-  blockExplorerUrls: ['https://bscscan.com/'],
+  rpcUrls: ['https://sepolia.infura.io/v3/'],
+  blockExplorerUrls: ['https://sepolia.etherscan.io/'],
 };
 
-// BNB donation address
+// Donation address on Sepolia
 export const DONATION_ADDRESS = "0x319A392465c0BFDDB4f8654768cB5095BeC7D88F";
 
 // Get available wallet provider
@@ -107,7 +106,7 @@ export const connectWallet = async (): Promise<{address: string | null, walletTy
     if (!provider) {
       toast({
         title: "No Wallet Found",
-        description: "Please install MetaMask, Trust Wallet, Binance Wallet, or another compatible wallet.",
+        description: "Please install MetaMask, Trust Wallet, or another compatible wallet.",
         variant: "destructive"
       });
       return { address: null, walletType: null };
@@ -118,11 +117,11 @@ export const connectWallet = async (): Promise<{address: string | null, walletTy
       method: 'eth_requestAccounts'
     });
     
-    // Switch to BSC network if needed
+    // Switch to Sepolia network if needed
     try {
       await provider.request({
         method: 'wallet_switchEthereumChain',
-        params: [{ chainId: BSC_NETWORK.chainId }],
+        params: [{ chainId: SEPOLIA_NETWORK.chainId }],
       });
     } catch (switchError: any) {
       // This error code indicates that the chain has not been added to the wallet
@@ -130,13 +129,13 @@ export const connectWallet = async (): Promise<{address: string | null, walletTy
         try {
           await provider.request({
             method: 'wallet_addEthereumChain',
-            params: [BSC_NETWORK],
+            params: [SEPOLIA_NETWORK],
           });
         } catch (addError) {
-          console.error("Error adding BSC network:", addError);
+          console.error("Error adding Sepolia network:", addError);
           toast({
             title: "Network Error",
-            description: "Could not add Binance Smart Chain to your wallet.",
+            description: "Could not add Sepolia Testnet to your wallet.",
             variant: "destructive"
           });
           return { address: null, walletType: null };
@@ -148,7 +147,7 @@ export const connectWallet = async (): Promise<{address: string | null, walletTy
       const walletType = detectWalletType(provider);
       toast({
         title: `${walletType} Connected`,
-        description: "Your wallet has been successfully connected.",
+        description: "Your wallet has been successfully connected to Sepolia Testnet.",
       });
       return { 
         address: accounts[0],
@@ -188,7 +187,7 @@ export const getWalletBalance = async (address: string): Promise<string> => {
   }
 };
 
-// Send BNB donation
+// Send ETH donation
 export const sendDonation = async (
   fromAddress: string, 
   amount: number
@@ -201,7 +200,7 @@ export const sendDonation = async (
       };
     }
     
-    // Convert BNB amount to wei
+    // Convert ETH amount to wei
     const amountInWei = `0x${(amount * Math.pow(10, 18)).toString(16)}`;
     
     // Send transaction

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -10,6 +11,7 @@ import { useBlockchainData } from '@/hooks/useBlockchainData';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useWallet } from '@/contexts/WalletContext';
+
 const Transparency = () => {
   const {
     address
@@ -28,6 +30,7 @@ const Transparency = () => {
   const formatTxHash = (hash: string) => {
     return `${hash.substring(0, 6)}...${hash.substring(hash.length - 4)}`;
   };
+
   return <div className="min-h-screen flex flex-col">
       <Header />
       
@@ -66,13 +69,13 @@ const Transparency = () => {
                 <CardContent>
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm text-gray-500">Contract Address:</span>
-                    <a href={`https://bscscan.com/address/${DONATION_ADDRESS}`} target="_blank" rel="noopener noreferrer" className="text-earthquake-primary hover:underline flex items-center gap-1">
+                    <a href={`https://sepolia.etherscan.io/address/${DONATION_ADDRESS}`} target="_blank" rel="noopener noreferrer" className="text-earthquake-primary hover:underline flex items-center gap-1">
                       {formatTxHash(DONATION_ADDRESS)}
                       <ExternalLink className="h-3 w-3" />
                     </a>
                   </div>
                   <p className="text-sm text-gray-600">
-                    All donations are received through this address on the Binance Smart Chain, ensuring automatic and transparent tracking of funds.
+                    All donations are received through this address on the Sepolia Testnet, ensuring automatic and transparent tracking of funds.
                   </p>
                 </CardContent>
               </Card>
@@ -85,10 +88,10 @@ const Transparency = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {isLoading ? <Skeleton className="h-9 w-24 mb-2" /> : <div className="text-3xl font-bold mb-2">{totalDonations} BNB</div>}
+                  {isLoading ? <Skeleton className="h-9 w-24 mb-2" /> : <div className="text-3xl font-bold mb-2">{totalDonations} ETH</div>}
                   <div className="flex items-center justify-between">
                     {isLoading ? <Skeleton className="h-4 w-28" /> : <span className="text-sm text-gray-500">From {donorCount} donors</span>}
-                    <a href={`https://bscscan.com/address/${DONATION_ADDRESS}`} target="_blank" rel="noopener noreferrer" className="text-earthquake-primary hover:underline text-sm flex items-center gap-1">
+                    <a href={`https://sepolia.etherscan.io/address/${DONATION_ADDRESS}`} target="_blank" rel="noopener noreferrer" className="text-earthquake-primary hover:underline text-sm flex items-center gap-1">
                       View all
                       <ExternalLink className="h-3 w-3" />
                     </a>
@@ -104,10 +107,10 @@ const Transparency = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {isLoading ? <Skeleton className="h-9 w-24 mb-2" /> : <div className="text-3xl font-bold mb-2">{distributedAmount} BNB</div>}
+                  {isLoading ? <Skeleton className="h-9 w-24 mb-2" /> : <div className="text-3xl font-bold mb-2">{distributedAmount} ETH</div>}
                   <div className="flex items-center justify-between">
                     {isLoading ? <Skeleton className="h-4 w-36" /> : <span className="text-sm text-gray-500">Across {recentDistributions.length} initiatives</span>}
-                    <a href={`https://bscscan.com/address/${DONATION_ADDRESS}`} target="_blank" rel="noopener noreferrer" className="text-earthquake-primary hover:underline text-sm flex items-center gap-1">
+                    <a href={`https://sepolia.etherscan.io/address/${DONATION_ADDRESS}`} target="_blank" rel="noopener noreferrer" className="text-earthquake-primary hover:underline text-sm flex items-center gap-1">
                       View all
                       <ExternalLink className="h-3 w-3" />
                     </a>
@@ -149,7 +152,7 @@ const Transparency = () => {
                   We believe that full transparency is essential for effective disaster relief. Our use of blockchain technology enables us to provide verifiable records of all donations and disbursements.
                 </p>
                 <p className="text-gray-600">
-                  All transactions are permanently recorded on the Binance Smart Chain blockchain and can be independently verified by anyone. This ensures that donors can see exactly how their contributions are being used to help earthquake victims.
+                  All transactions are permanently recorded on the Sepolia Testnet blockchain and can be independently verified by anyone. This ensures that donors can see exactly how their contributions are being used to help earthquake victims.
                 </p>
               </div>
             </div>

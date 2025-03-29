@@ -43,7 +43,7 @@ const Header = () => {
                 <Button variant="outline" className="flex items-center gap-2 border-earthquake-primary text-earthquake-primary hover:bg-earthquake-primary hover:text-white">
                   <Wallet className="h-4 w-4" />
                   <span>{shortAddress}</span>
-                  <span className="text-sm text-gray-500">{balance} BNB</span>
+                  <span className="text-sm text-gray-500">{balance} ETH</span>
                   <ChevronDown className="h-4 w-4 ml-1" />
                 </Button>
               </DropdownMenuTrigger>
@@ -83,7 +83,7 @@ const Header = () => {
           <Link to="/#donate">
             <Button className="flex items-center gap-2 bg-earthquake-accent hover:bg-earthquake-accent/90 text-white">
               <HandCoins className="h-4 w-4" />
-              <span>Donate BNB</span>
+              <span>Donate ETH</span>
             </Button>
           </Link>
         </div>

@@ -22,8 +22,8 @@ type Distribution = {
   recipient: string;
 };
 
-// BSCScan API response types
-type BscScanTransaction = {
+// Etherscan API response types
+type EtherscanTransaction = {
   blockNumber: string;
   timeStamp: string;
   hash: string;
@@ -34,10 +34,10 @@ type BscScanTransaction = {
   input: string;
 };
 
-type BscScanResponse = {
+type EtherscanResponse = {
   status: string;
   message: string;
-  result: BscScanTransaction[];
+  result: EtherscanTransaction[];
 };
 
 type BlockchainStats = {
@@ -50,9 +50,9 @@ type BlockchainStats = {
   refreshData: () => void;
 };
 
-// BSCScan API key
-const BSCSCAN_API_KEY = "NR1SPC7ZW29P2G27WQH2J4H28GB16P8MNV";
-const BSCSCAN_API_URL = "https://api.bscscan.com/api";
+// Etherscan API key and URL for Sepolia
+const ETHERSCAN_API_KEY = "YourEtherscanAPIKey"; // Replace with your Etherscan API key
+const ETHERSCAN_API_URL = "https://api-sepolia.etherscan.io/api";
 
 // Start date timestamp - March 29, 2025
 const START_DATE_TIMESTAMP = Math.floor(new Date('2025-03-29T00:00:00Z').getTime() / 1000).toString();
@@ -66,10 +66,10 @@ export const useBlockchainData = (): BlockchainStats => {
   const [recentDonations, setRecentDonations] = useState<Transaction[]>([]);
   const [recentDistributions, setRecentDistributions] = useState<Distribution[]>([]);
 
-  // Convert Wei to BNB
-  const weiToBnb = (wei: string): string => {
-    const bnbValue = parseInt(wei) / 1e18;
-    return bnbValue.toFixed(4);
+  // Convert Wei to ETH
+  const weiToEth = (wei: string): string => {
+    const ethValue = parseInt(wei) / 1e18;
+    return ethValue.toFixed(4);
   };
 
   // Format timestamp to date
@@ -79,7 +79,7 @@ export const useBlockchainData = (): BlockchainStats => {
   };
 
   // Get unique donors count
-  const getUniqueDonorsCount = (transactions: BscScanTransaction[]): number => {
+  const getUniqueDonorsCount = (transactions: EtherscanTransaction[]): number => {
     const uniqueDonors = new Set();
     transactions.forEach(tx => {
       if (tx.to.toLowerCase() === DONATION_ADDRESS.toLowerCase()) {
@@ -90,7 +90,7 @@ export const useBlockchainData = (): BlockchainStats => {
   };
 
   // Calculate total donations
-  const calculateTotalDonations = (transactions: BscScanTransaction[]): string => {
+  const calculateTotalDonations = (transactions: EtherscanTransaction[]): string => {
     let total = 0;
     transactions.forEach(tx => {
       if (tx.to.toLowerCase() === DONATION_ADDRESS.toLowerCase() && tx.isError === "0") {
@@ -101,7 +101,7 @@ export const useBlockchainData = (): BlockchainStats => {
   };
 
   // Calculate distributed amount (outgoing transactions from donation address)
-  const calculateDistributedAmount = (transactions: BscScanTransaction[]): string => {
+  const calculateDistributedAmount = (transactions: EtherscanTransaction[]): string => {
     let total = 0;
     transactions.forEach(tx => {
       if (tx.from.toLowerCase() === DONATION_ADDRESS.toLowerCase() && tx.isError === "0") {
@@ -112,13 +112,13 @@ export const useBlockchainData = (): BlockchainStats => {
   };
 
   // Convert transactions to our application format
-  const convertToTransactions = (bscTransactions: BscScanTransaction[]): Transaction[] => {
-    return bscTransactions
+  const convertToTransactions = (ethTransactions: EtherscanTransaction[]): Transaction[] => {
+    return ethTransactions
       .filter(tx => tx.to.toLowerCase() === DONATION_ADDRESS.toLowerCase() && tx.isError === "0")
       .map(tx => ({
         id: tx.hash,
         date: formatTimestamp(tx.timeStamp),
-        amount: `${weiToBnb(tx.value)} BNB`,
+        amount: `${weiToEth(tx.value)} ETH`,
         txHash: tx.hash,
         donor: tx.from
       }))
@@ -126,13 +126,13 @@ export const useBlockchainData = (): BlockchainStats => {
   };
 
   // Convert outgoing transactions to distributions format
-  const convertToDistributions = (bscTransactions: BscScanTransaction[]): Distribution[] => {
-    return bscTransactions
+  const convertToDistributions = (ethTransactions: EtherscanTransaction[]): Distribution[] => {
+    return ethTransactions
       .filter(tx => tx.from.toLowerCase() === DONATION_ADDRESS.toLowerCase() && tx.isError === "0")
       .map(tx => ({
         id: tx.hash,
         date: formatTimestamp(tx.timeStamp),
-        amount: `${weiToBnb(tx.value)} BNB`,
+        amount: `${weiToEth(tx.value)} ETH`,
         txHash: tx.hash,
         purpose: "Relief Funds", // This would ideally be decoded from input data
         recipient: tx.to
@@ -140,19 +140,19 @@ export const useBlockchainData = (): BlockchainStats => {
       .slice(0, 5); // Get the 5 most recent distributions
   };
 
-  // Fetch transaction data from BSCScan
+  // Fetch transaction data from Etherscan
   const fetchTransactionData = async () => {
     try {
       // Get incoming transactions (donations) from the start date
       const incomingResponse = await fetch(
-        `${BSCSCAN_API_URL}?module=account&action=txlist&address=${DONATION_ADDRESS}&startblock=0&endblock=99999999&page=1&offset=100&starttime=${START_DATE_TIMESTAMP}&endtime=9999999999&sort=desc&apikey=${BSCSCAN_API_KEY}`
+        `${ETHERSCAN_API_URL}?module=account&action=txlist&address=${DONATION_ADDRESS}&startblock=0&endblock=99999999&page=1&offset=100&sort=desc&apikey=${ETHERSCAN_API_KEY}`
       );
       
       if (!incomingResponse.ok) {
-        throw new Error(`BSCScan API responded with status: ${incomingResponse.status}`);
+        throw new Error(`Etherscan API responded with status: ${incomingResponse.status}`);
       }
       
-      const incomingData: BscScanResponse = await incomingResponse.json();
+      const incomingData: EtherscanResponse = await incomingResponse.json();
 
       if (incomingData.status === "1") {
         const transactions = incomingData.result;
@@ -168,14 +168,14 @@ export const useBlockchainData = (): BlockchainStats => {
         
         // Get outgoing transactions (distributions) from the start date
         const outgoingResponse = await fetch(
-          `${BSCSCAN_API_URL}?module=account&action=txlist&address=${DONATION_ADDRESS}&startblock=0&endblock=99999999&page=1&offset=100&starttime=${START_DATE_TIMESTAMP}&endtime=9999999999&sort=desc&apikey=${BSCSCAN_API_KEY}`
+          `${ETHERSCAN_API_URL}?module=account&action=txlist&address=${DONATION_ADDRESS}&startblock=0&endblock=99999999&page=1&offset=100&sort=desc&apikey=${ETHERSCAN_API_KEY}`
         );
         
         if (!outgoingResponse.ok) {
-          throw new Error(`BSCScan API responded with status: ${outgoingResponse.status}`);
+          throw new Error(`Etherscan API responded with status: ${outgoingResponse.status}`);
         }
         
-        const outgoingData: BscScanResponse = await outgoingResponse.json();
+        const outgoingData: EtherscanResponse = await outgoingResponse.json();
         
         if (outgoingData.status === "1") {
           // Apply start date filter to ensure we're only processing transactions after March 29, 2025
@@ -186,10 +186,10 @@ export const useBlockchainData = (): BlockchainStats => {
           setDistributedAmount(calculateDistributedAmount(filteredOutgoingTransactions));
           setRecentDistributions(convertToDistributions(filteredOutgoingTransactions));
         } else {
-          throw new Error(`BSCScan API error: ${outgoingData.message}`);
+          throw new Error(`Etherscan API error: ${outgoingData.message}`);
         }
       } else {
-        throw new Error(`BSCScan API error: ${incomingData.message}`);
+        throw new Error(`Etherscan API error: ${incomingData.message}`);
       }
     } catch (error) {
       console.error("Error fetching blockchain data:", error);
