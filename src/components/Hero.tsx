@@ -1,9 +1,37 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { HandCoins, TrendingUp } from "lucide-react";
+import { Link } from "react-router-dom";
+
+interface EarthquakeData {
+  title: string;
+  magnitude?: string;
+}
 
 const Hero = () => {
+  const [earthquakeData, setEarthquakeData] = useState<EarthquakeData | null>(null);
+  
+  useEffect(() => {
+    // Check if we have crawled earthquake data
+    const storedData = localStorage.getItem('earthquakeData');
+    if (storedData) {
+      try {
+        const data = JSON.parse(storedData);
+        setEarthquakeData({
+          title: data.title,
+          magnitude: data.title.match(/\d+\.\d+/)?.[0] || '7.2'
+        });
+      } catch (error) {
+        console.error('Failed to parse earthquake data:', error);
+      }
+    }
+  }, []);
+
+  // Extract magnitude from title or use default
+  const magnitude = earthquakeData?.magnitude || '7.7';
+  const title = earthquakeData?.title || `${magnitude} Magnitude Earthquake Relief Fund`;
+
   return (
     <div className="relative overflow-hidden bg-gradient-to-b from-earthquake-dark to-earthquake-primary text-white">
       <div className="absolute inset-0 z-0 opacity-20 bg-[url('https://images.unsplash.com/photo-1517490232338-06b0c01688e1')] bg-cover bg-center"></div>
@@ -16,22 +44,26 @@ const Hero = () => {
           </div>
           
           <h1 className="text-4xl md:text-6xl font-bold mb-6">
-            7.7 Magnitude Earthquake Relief Fund
+            {title}
           </h1>
           
           <p className="text-xl mb-8 text-white/90">
-            Join our efforts to provide immediate aid to those affected by the devastating 7.7 magnitude earthquake. Your BNB donations directly fund rescue operations, medical aid, and essential supplies.
+            Join our efforts to provide immediate aid to those affected by the devastating {magnitude} magnitude earthquake. Your BNB donations directly fund rescue operations, medical aid, and essential supplies.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4">
-            <Button size="lg" className="bg-earthquake-accent hover:bg-earthquake-accent/90 text-white flex items-center gap-2">
-              <HandCoins className="h-5 w-5" />
-              <span>Donate BNB Now</span>
-            </Button>
+            <Link to="/#donate">
+              <Button size="lg" className="bg-earthquake-accent hover:bg-earthquake-accent/90 text-white flex items-center gap-2">
+                <HandCoins className="h-5 w-5" />
+                <span>Donate BNB Now</span>
+              </Button>
+            </Link>
             
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
-              Learn About Our Impact
-            </Button>
+            <Link to="/transparency">
+              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+                Learn About Our Impact
+              </Button>
+            </Link>
           </div>
           
           <div className="mt-8 bg-black/20 p-4 rounded-lg">
