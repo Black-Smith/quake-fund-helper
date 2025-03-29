@@ -9,8 +9,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 const Hero = () => {
   const { totalDonations, donorCount, isLoading } = useBlockchainData();
   
-  // Goal is 100 BNB
-  const goalAmount = 100;
+  // Goal is 1000 BNB
+  const goalAmount = 1000;
   // Calculate percentage for visual indication (capped at 100%)
   const percentageRaised = Math.min((parseFloat(totalDonations) / goalAmount) * 100, 100);
   
