@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -6,10 +5,8 @@ import Hero from '@/components/Hero';
 import DonationForm from '@/components/DonationForm';
 import TransparencySection from '@/components/TransparencySection';
 import EarthquakeInfoSection from '@/components/EarthquakeInfoSection';
-
 const Index = () => {
-  return (
-    <div className="min-h-screen flex flex-col">
+  return <div className="min-h-screen flex flex-col">
       <Header />
       
       <main className="flex-grow">
@@ -23,9 +20,7 @@ const Index = () => {
                 <p className="text-gray-600 mb-4">
                   Your cryptocurrency donations make an immediate impact. By using BNB (Binance Coin), we ensure that funds are transferred quickly, securely, and with minimal fees.
                 </p>
-                <p className="text-gray-600 mb-4">
-                  Every transaction is recorded on the blockchain, providing complete transparency in how funds are collected and distributed to aid those affected by the March 29 earthquake.
-                </p>
+                <p className="text-gray-600 mb-4">Every transaction is recorded on the blockchain, providing complete transparency in how funds are collected and distributed to aid those affected by the March 28 earthquake.</p>
                 <div className="bg-earthquake-primary/10 p-4 rounded-lg border border-earthquake-primary/20">
                   <h3 className="font-semibold mb-2 text-earthquake-primary">Why BNB?</h3>
                   <ul className="list-disc list-inside text-gray-600 space-y-2">
@@ -49,8 +44,6 @@ const Index = () => {
       </main>
       
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
