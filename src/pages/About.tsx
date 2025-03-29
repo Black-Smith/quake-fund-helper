@@ -3,7 +3,7 @@ import React from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Card, CardContent } from "@/components/ui/card";
-import { HeartHandshake, Users, Flag } from "lucide-react";
+import { HeartHandshake, Users, Flag, Building, Map } from "lucide-react";
 
 const About = () => {
   return (
@@ -16,7 +16,7 @@ const About = () => {
             <div className="max-w-3xl mx-auto text-center">
               <h1 className="text-4xl font-bold mb-6">About Our Mission</h1>
               <p className="text-xl text-gray-300">
-                We are dedicated to providing immediate relief and long-term support to those affected by the devastating 7.7 magnitude earthquake.
+                We are dedicated to providing immediate relief and long-term support to those affected by the devastating 7.7 magnitude earthquake in Myanmar.
               </p>
             </div>
           </div>
@@ -26,16 +26,19 @@ const About = () => {
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div>
-                <h2 className="text-3xl font-bold mb-6">Our Story</h2>
+                <h2 className="text-3xl font-bold mb-6">Myanmar Earthquake: What We Know</h2>
                 <div className="space-y-4">
                   <p className="text-gray-600">
-                    In the wake of the devastating 7.7 magnitude earthquake, our team of crypto enthusiasts, humanitarian aid workers, and blockchain developers came together with a shared vision: to harness the power of cryptocurrency for disaster relief.
+                    The 7.7-magnitude earthquake struck central Myanmar on March 29, 2025, sending shock waves across other parts of Southeast Asia and China and leaving a trail of death and destruction.
                   </p>
                   <p className="text-gray-600">
-                    We recognized that traditional donation systems often face delays, high transaction fees, and lack of transparency. Blockchain technology offered a solution to these challenges, enabling immediate, verifiable, and efficient fund distribution.
+                    The earthquake's epicenter was near Mandalay, Myanmar's second-largest city, striking at roughly 12:50 p.m. local time. The shallow depth of the quake (only 6 miles) caused violent shaking across the region.
                   </p>
                   <p className="text-gray-600">
-                    Our platform was built to bridge the gap between cryptocurrency holders who want to help and the urgent needs of earthquake victims on the ground. By accepting BNB donations, we ensure that aid reaches affected communities quickly and transparently.
+                    Central Myanmar, which lies on the eastern end of the Alpide Belt (one of the world's most active seismic zones), is prone to powerful earthquakes. The quake devastated areas near the Sagaing Fault, which runs north-south through the center of Myanmar.
+                  </p>
+                  <p className="text-gray-600">
+                    In Mandalay, the historic Ava Bridge, originally built by the British in the 1930s, has partially collapsed. The earthquake also caused damage in Bangkok, where a high-rise building under construction collapsed, killing at least nine people and leaving dozens missing.
                   </p>
                 </div>
               </div>
@@ -61,12 +64,12 @@ const About = () => {
                   <CardContent className="p-6">
                     <div className="flex items-start gap-4">
                       <div className="bg-earthquake-primary/10 p-3 rounded-full">
-                        <Users className="h-6 w-6 text-earthquake-primary" />
+                        <Map className="h-6 w-6 text-earthquake-primary" />
                       </div>
                       <div>
-                        <h3 className="text-xl font-semibold mb-2">Our Team</h3>
+                        <h3 className="text-xl font-semibold mb-2">Affected Areas</h3>
                         <p className="text-gray-600">
-                          A dedicated group of blockchain developers, disaster relief experts, and community organizers working together to maximize the impact of every donation.
+                          While Myanmar has been most severely impacted, the earthquake's effects were felt across Southeast Asia and parts of China. In Bangkok, a building collapse has caused multiple casualties.
                         </p>
                       </div>
                     </div>
@@ -77,12 +80,12 @@ const About = () => {
                   <CardContent className="p-6">
                     <div className="flex items-start gap-4">
                       <div className="bg-earthquake-primary/10 p-3 rounded-full">
-                        <Flag className="h-6 w-6 text-earthquake-primary" />
+                        <Building className="h-6 w-6 text-earthquake-primary" />
                       </div>
                       <div>
-                        <h3 className="text-xl font-semibold mb-2">Our Partners</h3>
+                        <h3 className="text-xl font-semibold mb-2">Infrastructure Damage</h3>
                         <p className="text-gray-600">
-                          We collaborate with local NGOs, medical teams, and community leaders to ensure that resources are directed where they're needed most.
+                          Historic structures like the Ava Bridge have partially collapsed. Critical infrastructure including hospitals, roads, and communication networks have been severely impacted, hampering rescue efforts.
                         </p>
                       </div>
                     </div>

@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
-import { MapPin, AlertCircle } from "lucide-react";
+import { MapPin, AlertCircle, Building, Bridge } from "lucide-react";
 
 const EarthquakeInfoSection = () => {
   return (
@@ -14,17 +14,17 @@ const EarthquakeInfoSection = () => {
               <span className="text-sm font-medium">7.7 Magnitude Earthquake</span>
             </div>
             
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">Disaster Overview</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">Myanmar Earthquake: Current Status</h2>
             
             <div className="space-y-4 text-gray-300">
               <p>
-                On April 7, 2023, a devastating 7.7 magnitude earthquake struck, causing widespread destruction across multiple cities and affecting millions of lives.
+                On March 29, 2025, a devastating 7.7 magnitude earthquake struck central Myanmar near Mandalay, the country's second-largest city, causing widespread destruction across multiple cities and affecting millions of lives.
               </p>
               <p>
-                The earthquake has damaged critical infrastructure including hospitals, schools, and residential buildings. Thousands of people are injured, displaced, and in urgent need of assistance.
+                The earthquake struck at a relatively shallow depth of six miles, causing violent shaking and devastating areas near the Sagaing Fault, which runs north-south through the center of Myanmar.
               </p>
               <p>
-                Relief efforts are underway, but the scale of the disaster requires substantial resources for emergency response, medical care, and ongoing support for affected communities.
+                The death toll has already exceeded 1,000 people with nearly 2,400 injured, and these numbers are expected to rise. U.S. Geological Survey models estimate that fatalities could potentially surpass 10,000.
               </p>
             </div>
             
@@ -33,18 +33,18 @@ const EarthquakeInfoSection = () => {
                 <MapPin className="h-5 w-5 text-earthquake-accent" />
                 <div>
                   <div className="text-sm text-gray-300">Epicenter</div>
-                  <div className="font-medium">Northern Coast Region</div>
+                  <div className="font-medium">Near Mandalay, Myanmar</div>
                 </div>
               </div>
               
               <div className="bg-white/10 px-4 py-3 rounded-lg">
                 <div className="text-sm text-gray-300">Depth</div>
-                <div className="font-medium">23 kilometers</div>
+                <div className="font-medium">6 miles</div>
               </div>
               
               <div className="bg-white/10 px-4 py-3 rounded-lg">
                 <div className="text-sm text-gray-300">Affected Population</div>
-                <div className="font-medium">~2.4 million people</div>
+                <div className="font-medium">~1.5 million+ people</div>
               </div>
             </div>
           </div>
@@ -72,16 +72,16 @@ const EarthquakeInfoSection = () => {
               <CardContent className="p-0">
                 <div className="grid grid-cols-3 divide-x">
                   <div className="p-4 text-center">
-                    <div className="text-2xl font-bold text-earthquake-primary">843</div>
-                    <div className="text-xs text-gray-500">Buildings Collapsed</div>
+                    <div className="text-2xl font-bold text-red-600">1,002+</div>
+                    <div className="text-xs text-gray-500">Confirmed Deaths</div>
                   </div>
                   <div className="p-4 text-center">
-                    <div className="text-2xl font-bold text-earthquake-primary">178</div>
-                    <div className="text-xs text-gray-500">Aftershocks</div>
+                    <div className="text-2xl font-bold text-earthquake-primary">2,376+</div>
+                    <div className="text-xs text-gray-500">Injured</div>
                   </div>
                   <div className="p-4 text-center">
-                    <div className="text-2xl font-bold text-earthquake-primary">12</div>
-                    <div className="text-xs text-gray-500">Cities Affected</div>
+                    <div className="text-2xl font-bold text-earthquake-primary">Multiple</div>
+                    <div className="text-xs text-gray-500">Countries Affected</div>
                   </div>
                 </div>
               </CardContent>

@@ -2,7 +2,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { HeartHandshake, TrendingUp, Github, ExternalLink } from "lucide-react";
+import { HeartHandshake, TrendingUp, Github, ExternalLink, Building, Hospital } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DONATION_ADDRESS } from "@/lib/blockchain";
 
@@ -18,7 +18,7 @@ const TransparencySection = () => {
         <div className="text-center max-w-3xl mx-auto mb-12">
           <h2 className="text-3xl font-bold mb-4">Transparent Fund Management</h2>
           <p className="text-gray-600">
-            We believe in complete transparency. All donations and disbursements are recorded on the blockchain and publicly viewable. 
+            We believe in complete transparency. All donations and disbursements for the Myanmar earthquake relief are recorded on the blockchain and publicly viewable. 
           </p>
         </div>
         
@@ -48,17 +48,17 @@ const TransparencySection = () => {
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <span className="font-medium">Food & Water</span>
-                    <span>20%</span>
+                    <span>15%</span>
                   </div>
-                  <Progress value={20} className="h-2" />
+                  <Progress value={15} className="h-2" />
                 </div>
                 
                 <div className="space-y-2">
                   <div className="flex justify-between">
-                    <span className="font-medium">Recovery & Rebuilding</span>
-                    <span>15%</span>
+                    <span className="font-medium">Infrastructure Repair</span>
+                    <span>20%</span>
                   </div>
-                  <Progress value={15} className="h-2" />
+                  <Progress value={20} className="h-2" />
                 </div>
                 
                 <div className="space-y-2">
@@ -83,21 +83,21 @@ const TransparencySection = () => {
             <CardContent className="space-y-6">
               <div className="flex items-start gap-4">
                 <div className="bg-earthquake-primary/10 p-2 rounded-full">
-                  <HeartHandshake className="h-5 w-5 text-earthquake-primary" />
+                  <Hospital className="h-5 w-5 text-earthquake-primary" />
                 </div>
                 <div>
-                  <h4 className="font-medium">Immutable Records</h4>
-                  <p className="text-sm text-gray-500">All transactions are permanently recorded on the Binance Smart Chain blockchain.</p>
+                  <h4 className="font-medium">Myanmar Medical Relief</h4>
+                  <p className="text-sm text-gray-500">Funding emergency medical care for over 2,300 injured victims in Mandalay.</p>
                 </div>
               </div>
               
               <div className="flex items-start gap-4">
                 <div className="bg-earthquake-primary/10 p-2 rounded-full">
-                  <TrendingUp className="h-5 w-5 text-earthquake-primary" />
+                  <Building className="h-5 w-5 text-earthquake-primary" />
                 </div>
                 <div>
-                  <h4 className="font-medium">Real-time Tracking</h4>
-                  <p className="text-sm text-gray-500">Monitor donations and distributions in real-time through our blockchain explorer.</p>
+                  <h4 className="font-medium">Infrastructure Support</h4>
+                  <p className="text-sm text-gray-500">Contributing to rebuilding efforts including the damaged Ava Bridge and other critical infrastructure.</p>
                 </div>
               </div>
               
