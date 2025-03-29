@@ -1,5 +1,6 @@
+
 import React, { createContext, useState, useEffect, useContext } from "react";
-import { connectWallet, isWalletConnected, getWalletBalance, formatAddress, WalletProvider } from "@/lib/blockchain";
+import { connectWallet, isWalletConnected, getWalletBalance, formatAddress, WalletProvider as WalletProviderType } from "@/lib/blockchain";
 
 // Update the WalletContextType type to include event methods
 type WalletContextType = {
@@ -14,10 +15,10 @@ type WalletContextType = {
 // Remove the EthereumProvider type as we'll use WalletProvider from blockchain.ts
 // No longer needed: type EthereumProvider = { ... }
 
-// Update the global declaration to use WalletProvider from blockchain.ts
+// Update the global declaration to use WalletProviderType
 declare global {
   interface Window {
-    ethereum?: WalletProvider;
+    ethereum?: WalletProviderType;
   }
 }
 
