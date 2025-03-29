@@ -63,6 +63,7 @@ export const useBlockchainData = (): BlockchainStats => {
   const [totalDonations, setTotalDonations] = useState('0');
   const [donorCount, setDonorCount] = useState(0);
   const [distributedAmount, setDistributedAmount] = useState('0');
+  const [distributionCount, setDistributionCount] = useState(0);
   const [recentDonations, setRecentDonations] = useState<Transaction[]>([]);
   const [recentDistributions, setRecentDistributions] = useState<Distribution[]>([]);
 
@@ -109,6 +110,13 @@ export const useBlockchainData = (): BlockchainStats => {
       }
     });
     return (total / 1e18).toFixed(4);
+  };
+
+  // Get total number of distributions
+  const getDistributionCount = (transactions: BscScanTransaction[]): number => {
+    return transactions.filter(tx => 
+      tx.from.toLowerCase() === DONATION_ADDRESS.toLowerCase() && tx.isError === "0"
+    ).length;
   };
 
   // Convert transactions to our application format
@@ -178,6 +186,7 @@ export const useBlockchainData = (): BlockchainStats => {
         setDonorCount(getUniqueDonorsCount(incomingTransactions));
         setRecentDonations(convertToTransactions(incomingTransactions));
         setDistributedAmount(calculateDistributedAmount(outgoingTransactions));
+        setDistributionCount(getDistributionCount(outgoingTransactions));
         setRecentDistributions(convertToDistributions(outgoingTransactions));
       } else {
         throw new Error(`BSCScan API error: ${incomingData.message}`);
@@ -196,6 +205,7 @@ export const useBlockchainData = (): BlockchainStats => {
       setTotalDonations('0');
       setDonorCount(0);
       setDistributedAmount('0');
+      setDistributionCount(0);
       setRecentDonations([]);
       setRecentDistributions([]);
     }
@@ -223,6 +233,7 @@ export const useBlockchainData = (): BlockchainStats => {
     totalDonations,
     donorCount,
     distributedAmount,
+    distributionCount,
     recentDonations,
     recentDistributions,
     isLoading,
