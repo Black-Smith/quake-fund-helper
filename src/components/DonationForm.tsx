@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -56,16 +57,23 @@ const DonationForm = () => {
   const handleNumberInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     
+    // Allow empty input for better UX
     if (value === '') {
-      (e.target as HTMLInputElement).value = '';
+      setAmount(0);
       return;
     }
     
+    // Only allow valid number formats with decimal points
     if (/^[0-9]*\.?[0-9]*$/.test(value)) {
-      const numValue = parseFloat(value);
-      if (!isNaN(numValue)) {
-        const clampedValue = Math.min(Math.max(numValue, 0.01), 100);
-        setAmount(clampedValue);
+      if (value === '.') {
+        // If only dot is entered, treat as "0."
+        setAmount(0);
+      } else {
+        const numValue = parseFloat(value);
+        if (!isNaN(numValue)) {
+          // Allow any valid number input without clamping during typing
+          setAmount(numValue);
+        }
       }
     }
   };
@@ -177,12 +185,18 @@ const DonationForm = () => {
             <Input
               type="text"
               id="amount-input"
-              value={amount}
+              value={amount === 0 ? '' : amount}
               onChange={handleNumberInputChange}
               className="w-full"
               onBlur={(e) => {
+                // On blur, if empty or invalid, set to minimum value
                 if (e.target.value === '' || isNaN(parseFloat(e.target.value))) {
                   setAmount(0.01);
+                } else {
+                  // On blur, clamp the value to the allowed range
+                  const numValue = parseFloat(e.target.value);
+                  const clampedValue = Math.min(Math.max(numValue, 0.01), 100);
+                  setAmount(clampedValue);
                 }
               }}
               pattern="[0-9]*\.?[0-9]*"
