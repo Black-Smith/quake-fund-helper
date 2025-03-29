@@ -1,12 +1,9 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { HandCoins, AlertCircle } from "lucide-react";
 import { Link } from "react-router-dom";
-
 const Hero = () => {
-  return (
-    <div className="relative overflow-hidden bg-gradient-to-b from-earthquake-dark to-earthquake-primary text-white">
+  return <div className="relative overflow-hidden bg-gradient-to-b from-earthquake-dark to-earthquake-primary text-white">
       <div className="absolute inset-0 z-0 opacity-20 bg-[url('https://images.unsplash.com/photo-1466442929976-97f336a657be')] bg-cover bg-center"></div>
       
       <div className="container relative z-10 mx-auto px-4 py-20 md:py-32">
@@ -33,7 +30,7 @@ const Hero = () => {
             </Link>
             
             <Link to="/transparency">
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+              <Button size="lg" variant="outline" className="border-white text-white bg-slate-900 hover:bg-slate-800">
                 Learn About Our Impact
               </Button>
             </Link>
@@ -63,8 +60,6 @@ const Hero = () => {
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Hero;
