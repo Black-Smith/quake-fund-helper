@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useWallet } from '@/contexts/WalletContext';
 import { DONATION_ADDRESS } from '@/lib/blockchain';
@@ -50,9 +49,8 @@ type BlockchainStats = {
   refreshData: () => void;
 };
 
-// BSCScan API key - using a free tier API key (limited to 5 calls/sec)
-// For a production app, this should come from an environment variable
-const BSCSCAN_API_KEY = "YourBscScanApiKey"; // Replace with actual API key for production
+// BSCScan API key
+const BSCSCAN_API_KEY = "NR1SPC7ZW29P2G27WQH2J4H28GB16P8MNV";
 const BSCSCAN_API_URL = "https://api.bscscan.com/api";
 
 export const useBlockchainData = (): BlockchainStats => {
@@ -166,8 +164,8 @@ export const useBlockchainData = (): BlockchainStats => {
       } else {
         console.error("Error fetching transaction data:", incomingData.message);
         toast({
-          title: "Error",
-          description: "Could not fetch blockchain data. Using placeholder data instead.",
+          title: "API Error",
+          description: `Could not fetch blockchain data: ${incomingData.message}. Using placeholder data instead.`,
           variant: "destructive"
         });
         // Use placeholder data if API fails
