@@ -5,7 +5,7 @@ import { HandCoins, AlertCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 const Hero = () => {
   return <div className="relative overflow-hidden bg-gradient-to-b from-earthquake-dark to-earthquake-primary text-white">
-      <div className="absolute inset-0 z-0 opacity-20 bg-[url('https://images.unsplash.com/photo-1545233722-1df55e5767e9')] bg-cover bg-center"></div>
+      <div className="absolute inset-0 z-0 opacity-20 bg-[url('https://images5.alphacoders.com/645/645897.jpg')] bg-cover bg-center"></div>
       
       <div className="container relative z-10 mx-auto px-4 py-20 md:py-32">
         <div className="max-w-3xl">
