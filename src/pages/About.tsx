@@ -32,9 +32,7 @@ const About = () => {
                   <p className="text-gray-600">
                     Central Myanmar, which lies on the eastern end of the Alpide Belt (one of the world's most active seismic zones), is prone to powerful earthquakes. The quake devastated areas near the Sagaing Fault, which runs north-south through the center of Myanmar.
                   </p>
-                  <p className="text-gray-600">
-                    In Mandalay, the historic Ava Bridge, originally built by the British in the 1930s, has partially collapsed. The earthquake also caused damage in Bangkok, where a high-rise building under construction collapsed, killing at least nine people and leaving dozens missing.
-                  </p>
+                  <p className="text-gray-600">In Mandalay, the historic Sagaing Bridge, originally built by the British in the 1930s, has partially collapsed. The earthquake also caused damage in Bangkok, where a high-rise building under construction collapsed, killing at least nine people and leaving dozens missing.</p>
                 </div>
               </div>
               
