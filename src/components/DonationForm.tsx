@@ -54,30 +54,6 @@ const DonationForm = () => {
     setAmount(value[0]);
   };
 
-  const handleNumberInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    
-    // Allow empty input for better UX
-    if (value === '') {
-      setAmount(0);
-      return;
-    }
-    
-    // Only allow valid number formats with decimal points
-    if (/^[0-9]*\.?[0-9]*$/.test(value)) {
-      if (value === '.') {
-        // If only dot is entered, treat as "0."
-        setAmount(0);
-      } else {
-        const numValue = parseFloat(value);
-        if (!isNaN(numValue)) {
-          // Allow any valid number input without clamping during typing
-          setAmount(numValue);
-        }
-      }
-    }
-  };
-
   const handleCopyAddress = () => {
     navigator.clipboard.writeText(DONATION_ADDRESS);
     toast({
@@ -181,29 +157,6 @@ const DonationForm = () => {
       <div className="space-y-6">
         <div className="space-y-2">
           <Label htmlFor="amount">Donation Amount (BNB)</Label>
-          <div className="flex items-center gap-2 mb-2">
-            <Input
-              type="text"
-              id="amount-input"
-              value={amount === 0 ? '' : amount.toString()}
-              onChange={handleNumberInputChange}
-              className="w-full"
-              onBlur={(e) => {
-                // On blur, if empty or invalid, set to minimum value
-                if (e.target.value === '' || isNaN(parseFloat(e.target.value))) {
-                  setAmount(0.01);
-                } else {
-                  // On blur, clamp the value to the allowed range
-                  const numValue = parseFloat(e.target.value);
-                  const clampedValue = Math.min(Math.max(numValue, 0.01), 100);
-                  setAmount(clampedValue);
-                }
-              }}
-              inputMode="decimal"
-              placeholder="Enter amount"
-            />
-            <span className="font-medium">BNB</span>
-          </div>
           <div className="text-3xl font-bold text-center my-2">{amount} BNB</div>
           <Slider id="amount" min={0.01} max={100} step={0.01} value={[amount]} onValueChange={handleAmountChange} className="my-6" />
           <div className="flex justify-between text-sm text-gray-500">
