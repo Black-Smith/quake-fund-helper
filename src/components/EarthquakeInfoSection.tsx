@@ -28,7 +28,7 @@ const EarthquakeInfoSection = () => {
                 <MapPin className="h-5 w-5 text-earthquake-accent" />
                 <div>
                   <div className="text-sm text-gray-300">Epicenter</div>
-                  <div className="font-medium">Near Mandalay, Myanmar</div>
+                  <div className="font-medium">Sagaing, Myanmar</div>
                 </div>
               </div>
               
