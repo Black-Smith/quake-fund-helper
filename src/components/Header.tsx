@@ -1,12 +1,20 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Earth, HandCoins, Heart, Wallet } from "lucide-react";
+import { Earth, HandCoins, Heart, Wallet, ChevronDown, LogOut } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useWallet } from "@/contexts/WalletContext";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Header = () => {
-  const { isConnected, shortAddress, balance, connect, isConnecting } = useWallet();
+  const { isConnected, shortAddress, balance, connect, disconnect, isConnecting, walletType } = useWallet();
 
   return (
     <header className="sticky top-0 z-50 w-full bg-white border-b shadow-sm">
@@ -30,11 +38,29 @@ const Header = () => {
 
         <div className="flex items-center space-x-4">
           {isConnected ? (
-            <div className="hidden md:flex items-center gap-2 border rounded-md border-earthquake-primary text-earthquake-primary px-3 py-1.5">
-              <Wallet className="h-4 w-4" />
-              <span>{shortAddress}</span>
-              <span className="text-sm text-gray-500">{balance} BNB</span>
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="flex items-center gap-2 border-earthquake-primary text-earthquake-primary hover:bg-earthquake-primary hover:text-white">
+                  <Wallet className="h-4 w-4" />
+                  <span>{shortAddress}</span>
+                  <span className="text-sm text-gray-500">{balance} BNB</span>
+                  <ChevronDown className="h-4 w-4 ml-1" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56">
+                <DropdownMenuLabel>Wallet Connected</DropdownMenuLabel>
+                {walletType && (
+                  <DropdownMenuItem className="text-xs text-gray-500 cursor-default">
+                    {walletType}
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="text-destructive focus:text-destructive flex items-center gap-2" onClick={disconnect}>
+                  <LogOut className="h-4 w-4" />
+                  <span>Disconnect</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : (
             <Button 
               variant="outline" 

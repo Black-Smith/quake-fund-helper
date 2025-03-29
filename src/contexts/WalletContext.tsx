@@ -1,8 +1,9 @@
 
 import React, { createContext, useState, useEffect, useContext } from "react";
 import { connectWallet, isWalletConnected, getWalletBalance, formatAddress, WalletProvider as WalletProviderType } from "@/lib/blockchain";
+import { toast } from "@/hooks/use-toast";
 
-// Update the WalletContextType type to include event methods
+// Update the WalletContextType type to include disconnect method
 type WalletContextType = {
   address: string | null;
   shortAddress: string;
@@ -10,10 +11,9 @@ type WalletContextType = {
   isConnected: boolean;
   isConnecting: boolean;
   connect: () => Promise<void>;
+  disconnect: () => void;
+  walletType: string | null;
 };
-
-// Remove the EthereumProvider type as we'll use WalletProvider from blockchain.ts
-// No longer needed: type EthereumProvider = { ... }
 
 // Update the global declaration to use WalletProviderType
 declare global {
@@ -29,6 +29,8 @@ const WalletContext = createContext<WalletContextType>({
   isConnected: false,
   isConnecting: false,
   connect: async () => {},
+  disconnect: () => {},
+  walletType: null,
 });
 
 export const useWallet = () => useContext(WalletContext);
@@ -38,6 +40,28 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [balance, setBalance] = useState("0");
   const [isConnected, setIsConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
+  const [walletType, setWalletType] = useState<string | null>(null);
+
+  // Detect wallet type
+  const detectWalletType = () => {
+    if (!window.ethereum) return null;
+    
+    if (window.ethereum.isMetaMask) {
+      return "MetaMask";
+    } else if (window.ethereum.isTrust) {
+      return "Trust Wallet";
+    } else if (window.ethereum.isCoinbaseWallet) {
+      return "Coinbase Wallet";
+    } else if (window.ethereum.isTokenPocket) {
+      return "TokenPocket";
+    } else if (window.ethereum.isMathWallet) {
+      return "Math Wallet";
+    } else if (window.ethereum.isBinanceChainWallet) {
+      return "Binance Wallet";
+    } else {
+      return "Web3 Wallet";
+    }
+  };
 
   // Check if wallet is already connected on mount
   useEffect(() => {
@@ -50,6 +74,7 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           setIsConnected(true);
           const bal = await getWalletBalance(accounts[0]);
           setBalance(bal);
+          setWalletType(detectWalletType());
         }
       }
     };
@@ -62,10 +87,12 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setAddress(null);
         setIsConnected(false);
         setBalance("0");
+        setWalletType(null);
       } else {
         setAddress(accounts[0]);
         setIsConnected(true);
         getWalletBalance(accounts[0]).then(bal => setBalance(bal));
+        setWalletType(detectWalletType());
       }
     };
     
@@ -90,11 +117,35 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setIsConnected(true);
         const bal = await getWalletBalance(account);
         setBalance(bal);
+        setWalletType(detectWalletType());
       }
     } catch (error) {
       console.error("Failed to connect wallet:", error);
     } finally {
       setIsConnecting(false);
+    }
+  };
+  
+  // Add disconnect method
+  const disconnect = () => {
+    try {
+      // For most wallets, we can't force disconnect, so we just clear the state
+      setAddress(null);
+      setIsConnected(false);
+      setBalance("0");
+      setWalletType(null);
+      
+      toast({
+        title: "Wallet Disconnected",
+        description: "Your wallet has been disconnected from the application."
+      });
+    } catch (error) {
+      console.error("Failed to disconnect wallet:", error);
+      toast({
+        title: "Disconnect Error",
+        description: "Failed to disconnect wallet. Please try again.",
+        variant: "destructive"
+      });
     }
   };
   
@@ -108,7 +159,9 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         balance,
         isConnected,
         isConnecting,
-        connect
+        connect,
+        disconnect,
+        walletType
       }}
     >
       {children}
