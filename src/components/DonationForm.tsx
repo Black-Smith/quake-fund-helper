@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -55,10 +54,16 @@ const DonationForm = () => {
   };
 
   const handleNumberInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseFloat(e.target.value);
-    if (!isNaN(value)) {
-      // Ensure the value is between the min and max
-      const clampedValue = Math.min(Math.max(value, 0.01), 100);
+    const value = e.target.value;
+    
+    if (value === '') {
+      (e.target as HTMLInputElement).value = '';
+      return;
+    }
+    
+    const numValue = parseFloat(value);
+    if (!isNaN(numValue)) {
+      const clampedValue = Math.min(Math.max(numValue, 0.01), 100);
       setAmount(clampedValue);
     }
   };
@@ -176,6 +181,11 @@ const DonationForm = () => {
               max={100}
               step={0.01}
               className="w-full"
+              onBlur={(e) => {
+                if (e.target.value === '' || isNaN(parseFloat(e.target.value))) {
+                  setAmount(0.01);
+                }
+              }}
             />
             <span className="font-medium">BNB</span>
           </div>
