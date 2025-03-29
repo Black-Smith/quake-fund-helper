@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
@@ -34,7 +33,7 @@ type TransactionTableProps = {
   type: 'donation' | 'distribution';
 };
 
-const ITEMS_PER_PAGE = 5;
+const ITEMS_PER_PAGE = 20;
 
 const TransactionTable: React.FC<TransactionTableProps> = ({ transactions, type }) => {
   const [currentPage, setCurrentPage] = useState(1);
