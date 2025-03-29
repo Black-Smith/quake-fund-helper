@@ -93,7 +93,7 @@ const TransparencySection = () => {
                 </div>
                 <div>
                   <h4 className="font-medium">Infrastructure Support</h4>
-                  <p className="text-sm text-gray-500">Contributing to rebuilding efforts including the damaged Ava Bridge and other critical infrastructure.</p>
+                  <p className="text-sm text-gray-500">Contributing to rebuilding efforts including the damaged Sagaing Bridge and other critical infrastructure.</p>
                 </div>
               </div>
               
