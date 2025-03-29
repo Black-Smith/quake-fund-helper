@@ -1,11 +1,8 @@
-
 import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { MapPin, AlertCircle, Building, Landmark } from "lucide-react";
-
 const EarthquakeInfoSection = () => {
-  return (
-    <div className="py-16 bg-earthquake-dark text-white">
+  return <div className="py-16 bg-earthquake-dark text-white">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
@@ -17,9 +14,7 @@ const EarthquakeInfoSection = () => {
             <h2 className="text-3xl md:text-4xl font-bold mb-6">Myanmar Earthquake: Current Status</h2>
             
             <div className="space-y-4 text-gray-300">
-              <p>
-                On March 29, 2025, a devastating 7.7 magnitude earthquake struck central Myanmar near Mandalay, the country's second-largest city, causing widespread destruction across multiple cities and affecting millions of lives.
-              </p>
+              <p>On March 28, 2025, a devastating 7.7 magnitude earthquake struck central Myanmar near Mandalay, the country's second-largest city, causing widespread destruction across multiple cities and affecting millions of lives.</p>
               <p>
                 The earthquake struck at a relatively shallow depth of six miles, causing violent shaking and devastating areas near the Sagaing Fault, which runs north-south through the center of Myanmar.
               </p>
@@ -89,8 +84,6 @@ const EarthquakeInfoSection = () => {
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default EarthquakeInfoSection;
