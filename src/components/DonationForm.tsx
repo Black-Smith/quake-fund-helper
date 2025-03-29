@@ -185,7 +185,7 @@ const DonationForm = () => {
             <Input
               type="text"
               id="amount-input"
-              value={amount === 0 ? '' : amount}
+              value={amount === 0 ? '' : amount.toString()}
               onChange={handleNumberInputChange}
               className="w-full"
               onBlur={(e) => {
@@ -199,8 +199,8 @@ const DonationForm = () => {
                   setAmount(clampedValue);
                 }
               }}
-              pattern="[0-9]*\.?[0-9]*"
               inputMode="decimal"
+              placeholder="Enter amount"
             />
             <span className="font-medium">BNB</span>
           </div>
