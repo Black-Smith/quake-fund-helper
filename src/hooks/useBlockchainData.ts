@@ -54,7 +54,8 @@ type BlockchainStats = {
 const BSCSCAN_API_KEY = "NR1SPC7ZW29P2G27WQH2J4H28GB16P8MNV";
 const BSCSCAN_API_URL = "https://api.bscscan.com/api";
 
-// Removed START_DATE_TIMESTAMP - no longer filtering by date
+// Start date timestamp - January 1, 2018
+const START_DATE_TIMESTAMP = Math.floor(new Date('2018-01-01T00:00:00Z').getTime() / 1000).toString();
 
 export const useBlockchainData = (): BlockchainStats => {
   const { address } = useWallet();
@@ -142,9 +143,9 @@ export const useBlockchainData = (): BlockchainStats => {
   // Fetch transaction data from BSCScan
   const fetchTransactionData = async () => {
     try {
-      // Get all transactions for the donation address with no date restriction
+      // Get all transactions for the donation address with date filter from Jan 1, 2018
       const incomingResponse = await fetch(
-        `${BSCSCAN_API_URL}?module=account&action=txlist&address=${DONATION_ADDRESS}&startblock=0&endblock=99999999&page=1&offset=100&sort=desc&apikey=${BSCSCAN_API_KEY}`
+        `${BSCSCAN_API_URL}?module=account&action=txlist&address=${DONATION_ADDRESS}&startblock=0&endblock=99999999&page=1&offset=100&starttime=${START_DATE_TIMESTAMP}&endtime=9999999999&sort=desc&apikey=${BSCSCAN_API_KEY}`
       );
       
       if (!incomingResponse.ok) {
@@ -157,8 +158,9 @@ export const useBlockchainData = (): BlockchainStats => {
         // Filter transactions to include only direct transfers (sent or received)
         const allTransactions = incomingData.result;
         
-        // Filter for only valid transactions (no date filtering)
+        // Filter for only valid transactions and ensure they're after Jan 1, 2018
         const filteredTransactions = allTransactions.filter(tx => 
+          parseInt(tx.timeStamp) >= parseInt(START_DATE_TIMESTAMP) && 
           tx.isError === "0"
         );
         
