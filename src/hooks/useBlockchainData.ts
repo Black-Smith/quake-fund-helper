@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useWallet } from '@/contexts/WalletContext';
 import { DONATION_ADDRESS } from '@/lib/blockchain';
@@ -55,7 +56,7 @@ const BSCSCAN_API_URL = "https://api.bscscan.com/api";
 
 export const useBlockchainData = (): BlockchainStats => {
   const { address } = useWallet();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [totalDonations, setTotalDonations] = useState('0');
   const [donorCount, setDonorCount] = useState(0);
   const [distributedAmount, setDistributedAmount] = useState('0');
@@ -130,7 +131,7 @@ export const useBlockchainData = (): BlockchainStats => {
         date: formatTimestamp(tx.timeStamp),
         amount: `${weiToBnb(tx.value)} BNB`,
         txHash: tx.hash,
-        purpose: "Relief Funds", // This would require additional data or decoding the input data
+        purpose: "Relief Funds", // This would ideally be decoded from input data
         recipient: tx.to
       }))
       .slice(0, 5); // Get the 5 most recent distributions
@@ -143,6 +144,11 @@ export const useBlockchainData = (): BlockchainStats => {
       const incomingResponse = await fetch(
         `${BSCSCAN_API_URL}?module=account&action=txlist&address=${DONATION_ADDRESS}&startblock=0&endblock=99999999&sort=desc&apikey=${BSCSCAN_API_KEY}`
       );
+      
+      if (!incomingResponse.ok) {
+        throw new Error(`BSCScan API responded with status: ${incomingResponse.status}`);
+      }
+      
       const incomingData: BscScanResponse = await incomingResponse.json();
 
       if (incomingData.status === "1") {
@@ -155,63 +161,50 @@ export const useBlockchainData = (): BlockchainStats => {
         const outgoingResponse = await fetch(
           `${BSCSCAN_API_URL}?module=account&action=txlist&address=${DONATION_ADDRESS}&startblock=0&endblock=99999999&sort=desc&apikey=${BSCSCAN_API_KEY}`
         );
+        
+        if (!outgoingResponse.ok) {
+          throw new Error(`BSCScan API responded with status: ${outgoingResponse.status}`);
+        }
+        
         const outgoingData: BscScanResponse = await outgoingResponse.json();
         
         if (outgoingData.status === "1") {
           setDistributedAmount(calculateDistributedAmount(outgoingData.result));
           setRecentDistributions(convertToDistributions(outgoingData.result));
+        } else {
+          throw new Error(`BSCScan API error: ${outgoingData.message}`);
         }
       } else {
-        console.error("Error fetching transaction data:", incomingData.message);
-        toast({
-          title: "API Error",
-          description: `Could not fetch blockchain data: ${incomingData.message}. Using placeholder data instead.`,
-          variant: "destructive"
-        });
-        // Use placeholder data if API fails
-        usePlaceholderData();
+        throw new Error(`BSCScan API error: ${incomingData.message}`);
       }
     } catch (error) {
       console.error("Error fetching blockchain data:", error);
+      
+      // Show error toast with more detailed information
       toast({
-        title: "Error",
-        description: "Could not fetch blockchain data. Using placeholder data instead.",
+        title: "Blockchain Data Error",
+        description: `Could not fetch real-time blockchain data: ${error instanceof Error ? error.message : 'Unknown error'}. Please try again later.`,
         variant: "destructive"
       });
-      // Use placeholder data if API fails
-      usePlaceholderData();
+      
+      // Initialize with empty data instead of placeholders
+      setTotalDonations('0');
+      setDonorCount(0);
+      setDistributedAmount('0');
+      setRecentDonations([]);
+      setRecentDistributions([]);
     }
-  };
-
-  // Fallback to placeholder data
-  const usePlaceholderData = () => {
-    setTotalDonations('24.8');
-    setDonorCount(142);
-    setDistributedAmount('10.5');
-    setRecentDonations([
-      { id: '1', date: '2023-05-15', amount: '1.2 BNB', txHash: '0x83f2e5b3a4c7d9e1f0g6h2i5j3k1l7m9n8o4p6q3r7s5t2u9v8w1x4y6z7a9b1c3d2', donor: 'Anonymous' },
-      { id: '2', date: '2023-05-14', amount: '5.0 BNB', txHash: '0x72a4b6c8d9e1f3g5h7i9j1k3l5m7n9o1p3q5r7s9t1u3v5w7x9y1z3a5b7c9d1e3f5', donor: 'CryptoPhilanthropist' },
-      { id: '3', date: '2023-05-12', amount: '0.5 BNB', txHash: '0x91c3e5g7i9k1m3o5q7s9u1w3y5a7c9e1g3i5k7m9o1q3s5u7w9y1a3c5e7g9i1k3m5', donor: 'Anonymous' },
-      { id: '4', date: '2023-05-10', amount: '2.1 BNB', txHash: '0x45b8d7f6h5j4l3n2p1r0t9v8x7z6b5d4f3h2j1l0n9p8r7t6v5x4z3b2d1f0h9j8', donor: 'BNBSupporter' },
-      { id: '5', date: '2023-05-08', amount: '3.0 BNB', txHash: '0x67d4f1h8j5l2n9p6r3t0v7x4z1b8d5f2h9j6l3n0p7r4t1v8x5z2b9d6f3h0j7l4', donor: 'BlockchainCharity' },
-    ]);
-    setRecentDistributions([
-      { id: '1', date: '2023-05-17', amount: '4.2 BNB', txHash: '0xf3a2c4e6g8i1k3m5o7q9s1u3w5y7a9c1e3g5i7k9m1o3q5s7u9w1y3a5c7e9g1i3', purpose: 'Medical Supplies', recipient: 'Field Hospital Alpha' },
-      { id: '2', date: '2023-05-15', amount: '3.8 BNB', txHash: '0xe4b3d2a1c9b8a7f6e5d4c3b2a1f9e8d7c6b5a4f3e2d1c9b8a7f6e5d4c3b2a1f9', purpose: 'Temporary Shelters', recipient: 'Relief Coalition' },
-      { id: '3', date: '2023-05-12', amount: '2.5 BNB', txHash: '0xd5c4b3a2f1e9d8c7b6a5f4e3d2c1b9a8f7e6d5c4b3a2f1e9d8c7b6a5f4e3d2c1', purpose: 'Food & Water', recipient: 'Community Aid Network' },
-    ]);
   };
 
   const fetchBlockchainData = async () => {
     setIsLoading(true);
     
     try {
-      // Use real API call instead of setTimeout
       await fetchTransactionData();
-      setIsLoading(false);
     } catch (error) {
-      console.error("Error fetching blockchain data:", error);
-      usePlaceholderData();
+      console.error("Error in fetchBlockchainData:", error);
+      // All error handling is done in fetchTransactionData
+    } finally {
       setIsLoading(false);
     }
   };

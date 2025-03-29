@@ -2,10 +2,16 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { HeartHandshake, TrendingUp, Github } from "lucide-react";
+import { HeartHandshake, TrendingUp, Github, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { DONATION_ADDRESS } from "@/lib/blockchain";
 
 const TransparencySection = () => {
+  const formatAddress = (address: string): string => {
+    if (!address) return "";
+    return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
+  };
+
   return (
     <div className="py-16 bg-white">
       <div className="container mx-auto px-4">
@@ -105,9 +111,30 @@ const TransparencySection = () => {
                 </div>
               </div>
               
-              <Button className="w-full">
-                View Blockchain Records
-              </Button>
+              <div className="flex justify-between items-center">
+                <Button 
+                  className="w-full"
+                  onClick={() => window.open(`https://bscscan.com/address/${DONATION_ADDRESS}`, '_blank')}
+                >
+                  <span>View Blockchain Records</span>
+                  <ExternalLink className="ml-2 h-4 w-4" />
+                </Button>
+              </div>
+              
+              <div className="text-xs text-gray-500 mt-2">
+                <div className="flex items-center justify-between">
+                  <span>Contract Address:</span>
+                  <a 
+                    href={`https://bscscan.com/address/${DONATION_ADDRESS}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-earthquake-primary hover:underline flex items-center gap-1"
+                  >
+                    {formatAddress(DONATION_ADDRESS)}
+                    <ExternalLink className="h-3 w-3" />
+                  </a>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>
