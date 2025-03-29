@@ -39,7 +39,7 @@ const Transparency = () => {
               <p className="text-xl text-gray-300">
                 Full visibility into all donations and disbursements, powered by blockchain technology.
               </p>
-              {address && <Badge variant="outline" className="mt-4 px-4 py-2 border-earthquake-primary bg-slate-600">
+              {address && <Badge variant="outline" className="mt-4 px-4 py-2 border-earthquake-primary bg-slate-50">
                   Connected Wallet: {formatTxHash(address)}
                 </Badge>}
             </div>
