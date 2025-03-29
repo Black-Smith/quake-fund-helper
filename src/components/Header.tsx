@@ -1,10 +1,13 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Earth, HandCoins, Heart } from "lucide-react";
+import { Earth, HandCoins, Heart, Wallet } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useWallet } from "@/contexts/WalletContext";
 
 const Header = () => {
+  const { isConnected, shortAddress, balance, connect, isConnecting } = useWallet();
+
   return (
     <header className="sticky top-0 z-50 w-full bg-white border-b shadow-sm">
       <div className="container mx-auto flex items-center justify-between h-16 px-4">
@@ -29,14 +32,35 @@ const Header = () => {
         </nav>
 
         <div className="flex items-center space-x-4">
-          <Button variant="outline" className="hidden md:flex items-center gap-2 border-earthquake-primary text-earthquake-primary hover:bg-earthquake-primary hover:text-white">
-            <Heart className="h-4 w-4" />
-            <span>Track Funds</span>
-          </Button>
-          <Button className="flex items-center gap-2 bg-earthquake-accent hover:bg-earthquake-accent/90 text-white">
-            <HandCoins className="h-4 w-4" />
-            <span>Donate BNB</span>
-          </Button>
+          {isConnected ? (
+            <div className="hidden md:flex items-center gap-2 border rounded-md border-earthquake-primary text-earthquake-primary px-3 py-1.5">
+              <Wallet className="h-4 w-4" />
+              <span>{shortAddress}</span>
+              <span className="text-sm text-gray-500">{balance} BNB</span>
+            </div>
+          ) : (
+            <Button 
+              variant="outline" 
+              className="hidden md:flex items-center gap-2 border-earthquake-primary text-earthquake-primary hover:bg-earthquake-primary hover:text-white"
+              onClick={connect}
+              disabled={isConnecting}
+            >
+              <Wallet className="h-4 w-4" />
+              <span>{isConnecting ? "Connecting..." : "Connect Wallet"}</span>
+            </Button>
+          )}
+          <Link to="/transparency">
+            <Button variant="outline" className="hidden md:flex items-center gap-2 border-earthquake-primary text-earthquake-primary hover:bg-earthquake-primary hover:text-white">
+              <Heart className="h-4 w-4" />
+              <span>Track Funds</span>
+            </Button>
+          </Link>
+          <Link to="/#donate">
+            <Button className="flex items-center gap-2 bg-earthquake-accent hover:bg-earthquake-accent/90 text-white">
+              <HandCoins className="h-4 w-4" />
+              <span>Donate BNB</span>
+            </Button>
+          </Link>
         </div>
       </div>
     </header>

@@ -1,27 +1,72 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Bitcoin, ExternalLink } from "lucide-react";
+import { Bitcoin, ExternalLink, RefreshCw } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { DONATION_ADDRESS } from "@/lib/blockchain";
+
+// Define the transaction type
+type Transaction = {
+  id: number;
+  date: string;
+  amount: string;
+  txHash: string;
+  donor: string;
+};
+
+// Define the distribution type
+type Distribution = {
+  id: number;
+  date: string;
+  amount: string;
+  txHash: string;
+  purpose: string;
+  recipient: string;
+};
 
 const Transparency = () => {
-  // Sample donation data
-  const donations = [
-    { id: 1, date: "2023-05-15", amount: "1.2 BNB", txHash: "0x83f2...b9c1", donor: "Anonymous" },
-    { id: 2, date: "2023-05-14", amount: "5.0 BNB", txHash: "0x72a4...34d2", donor: "CryptoPhilanthropist" },
-    { id: 3, date: "2023-05-12", amount: "0.5 BNB", txHash: "0x91c3...f7e8", donor: "Anonymous" },
-    { id: 4, date: "2023-05-10", amount: "2.1 BNB", txHash: "0x45b8...a3d9", donor: "BNBSupporter" },
-    { id: 5, date: "2023-05-08", amount: "3.0 BNB", txHash: "0x67d4...c2e5", donor: "BlockchainCharity" },
-  ];
+  const [isLoading, setIsLoading] = useState(false);
+  const [totalDonations, setTotalDonations] = useState("24.8");
+  const [donorCount, setDonorCount] = useState(142);
+  const [distributedAmount, setDistributedAmount] = useState("10.5");
+  
+  // Sample donation data - in a real app, this would be fetched from an API or blockchain explorer
+  const [donations, setDonations] = useState<Transaction[]>([
+    { id: 1, date: "2023-05-15", amount: "1.2 BNB", txHash: "0x83f2e5b3a4c7d9e1f0g6h2i5j3k1l7m9n8o4p6q3r7s5t2u9v8w1x4y6z7a9b1c3d2", donor: "Anonymous" },
+    { id: 2, date: "2023-05-14", amount: "5.0 BNB", txHash: "0x72a4b6c8d9e1f3g5h7i9j1k3l5m7n9o1p3q5r7s9t1u3v5w7x9y1z3a5b7c9d1e3f5", donor: "CryptoPhilanthropist" },
+    { id: 3, date: "2023-05-12", amount: "0.5 BNB", txHash: "0x91c3e5g7i9k1m3o5q7s9u1w3y5a7c9e1g3i5k7m9o1q3s5u7w9y1a3c5e7g9i1k3m5", donor: "Anonymous" },
+    { id: 4, date: "2023-05-10", amount: "2.1 BNB", txHash: "0x45b8d7f6h5j4l3n2p1r0t9v8x7z6b5d4f3h2j1l0n9p8r7t6v5x4z3b2d1f0h9j8", donor: "BNBSupporter" },
+    { id: 5, date: "2023-05-08", amount: "3.0 BNB", txHash: "0x67d4f1h8j5l2n9p6r3t0v7x4z1b8d5f2h9j6l3n0p7r4t1v8x5z2b9d6f3h0j7l4", donor: "BlockchainCharity" },
+  ]);
 
   // Sample distribution data
-  const distributions = [
-    { id: 1, date: "2023-05-17", amount: "4.2 BNB", txHash: "0xf3a2...7bc1", purpose: "Medical Supplies", recipient: "Field Hospital Alpha" },
-    { id: 2, date: "2023-05-15", amount: "3.8 BNB", txHash: "0xe4b3...2cf9", purpose: "Temporary Shelters", recipient: "Relief Coalition" },
-    { id: 3, date: "2023-05-12", amount: "2.5 BNB", txHash: "0xd5c4...9af3", purpose: "Food & Water", recipient: "Community Aid Network" },
-  ];
+  const [distributions, setDistributions] = useState<Distribution[]>([
+    { id: 1, date: "2023-05-17", amount: "4.2 BNB", txHash: "0xf3a2c4e6g8i1k3m5o7q9s1u3w5y7a9c1e3g5i7k9m1o3q5s7u9w1y3a5c7e9g1i3", purpose: "Medical Supplies", recipient: "Field Hospital Alpha" },
+    { id: 2, date: "2023-05-15", amount: "3.8 BNB", txHash: "0xe4b3d2a1c9b8a7f6e5d4c3b2a1f9e8d7c6b5a4f3e2d1c9b8a7f6e5d4c3b2a1f9", purpose: "Temporary Shelters", recipient: "Relief Coalition" },
+    { id: 3, date: "2023-05-12", amount: "2.5 BNB", txHash: "0xd5c4b3a2f1e9d8c7b6a5f4e3d2c1b9a8f7e6d5c4b3a2f1e9d8c7b6a5f4e3d2c1", purpose: "Food & Water", recipient: "Community Aid Network" },
+  ]);
+
+  const refreshData = () => {
+    setIsLoading(true);
+    
+    // In a real app, this would fetch data from the blockchain
+    setTimeout(() => {
+      // This is a simulation - in a real app you would:
+      // 1. Fetch transactions from a blockchain explorer API for the donation address
+      // 2. Format the transactions into the correct format
+      // 3. Update the state with the fetched data
+      
+      setIsLoading(false);
+    }, 1500);
+  };
+  
+  // Format the transaction hash for display
+  const formatTxHash = (hash: string) => {
+    return `${hash.substring(0, 6)}...${hash.substring(hash.length - 4)}`;
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -41,6 +86,19 @@ const Transparency = () => {
         
         <div className="py-16">
           <div className="container mx-auto px-4">
+            <div className="flex justify-end mb-4">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="flex items-center gap-2"
+                onClick={refreshData}
+                disabled={isLoading}
+              >
+                <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+                {isLoading ? 'Refreshing...' : 'Refresh Data'}
+              </Button>
+            </div>
+            
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
               <Card>
                 <CardHeader className="pb-2">
@@ -52,13 +110,18 @@ const Transparency = () => {
                 <CardContent>
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm text-gray-500">Contract Address:</span>
-                    <a href="#" className="text-earthquake-primary hover:underline flex items-center gap-1">
-                      0x1234...5678
+                    <a 
+                      href={`https://bscscan.com/address/${DONATION_ADDRESS}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-earthquake-primary hover:underline flex items-center gap-1"
+                    >
+                      {formatTxHash(DONATION_ADDRESS)}
                       <ExternalLink className="h-3 w-3" />
                     </a>
                   </div>
                   <p className="text-sm text-gray-600">
-                    All donations are received through this smart contract, which ensures automatic and transparent tracking of funds.
+                    All donations are received through this address on the Binance Smart Chain, ensuring automatic and transparent tracking of funds.
                   </p>
                 </CardContent>
               </Card>
@@ -71,10 +134,15 @@ const Transparency = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold mb-2">24.8 BNB</div>
+                  <div className="text-3xl font-bold mb-2">{totalDonations} BNB</div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-500">From 142 donors</span>
-                    <a href="#" className="text-earthquake-primary hover:underline text-sm flex items-center gap-1">
+                    <span className="text-sm text-gray-500">From {donorCount} donors</span>
+                    <a 
+                      href={`https://bscscan.com/address/${DONATION_ADDRESS}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-earthquake-primary hover:underline text-sm flex items-center gap-1"
+                    >
                       View all
                       <ExternalLink className="h-3 w-3" />
                     </a>
@@ -90,10 +158,15 @@ const Transparency = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold mb-2">10.5 BNB</div>
+                  <div className="text-3xl font-bold mb-2">{distributedAmount} BNB</div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-500">Across 3 initiatives</span>
-                    <a href="#" className="text-earthquake-primary hover:underline text-sm flex items-center gap-1">
+                    <span className="text-sm text-gray-500">Across {distributions.length} initiatives</span>
+                    <a 
+                      href={`https://bscscan.com/address/${DONATION_ADDRESS}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-earthquake-primary hover:underline text-sm flex items-center gap-1"
+                    >
                       View all
                       <ExternalLink className="h-3 w-3" />
                     </a>
@@ -123,9 +196,16 @@ const Transparency = () => {
                             <TableCell>{donation.date}</TableCell>
                             <TableCell className="font-medium">{donation.amount}</TableCell>
                             <TableCell>{donation.donor}</TableCell>
-                            <TableCell className="hidden md:table-cell font-mono text-xs">{donation.txHash}</TableCell>
+                            <TableCell className="hidden md:table-cell font-mono text-xs">
+                              {formatTxHash(donation.txHash)}
+                            </TableCell>
                             <TableCell>
-                              <a href="#" className="text-earthquake-primary hover:underline flex items-center gap-1 justify-end">
+                              <a 
+                                href={`https://bscscan.com/tx/${donation.txHash}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-earthquake-primary hover:underline flex items-center gap-1 justify-end"
+                              >
                                 <ExternalLink className="h-3 w-3" />
                               </a>
                             </TableCell>
@@ -159,9 +239,16 @@ const Transparency = () => {
                             <TableCell className="font-medium">{distribution.amount}</TableCell>
                             <TableCell>{distribution.purpose}</TableCell>
                             <TableCell className="hidden md:table-cell">{distribution.recipient}</TableCell>
-                            <TableCell className="hidden lg:table-cell font-mono text-xs">{distribution.txHash}</TableCell>
+                            <TableCell className="hidden lg:table-cell font-mono text-xs">
+                              {formatTxHash(distribution.txHash)}
+                            </TableCell>
                             <TableCell>
-                              <a href="#" className="text-earthquake-primary hover:underline flex items-center gap-1 justify-end">
+                              <a 
+                                href={`https://bscscan.com/tx/${distribution.txHash}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-earthquake-primary hover:underline flex items-center gap-1 justify-end"
+                              >
                                 <ExternalLink className="h-3 w-3" />
                               </a>
                             </TableCell>

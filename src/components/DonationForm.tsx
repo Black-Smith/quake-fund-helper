@@ -1,26 +1,69 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Card } from "@/components/ui/card";
-import { Bitcoin, Copy, AlertCircle } from "lucide-react";
+import { Bitcoin, Copy, AlertCircle, Wallet, Loader2, Check, ExternalLink } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { useWallet } from "@/contexts/WalletContext";
+import { DONATION_ADDRESS, sendDonation, getTransactionReceipt } from "@/lib/blockchain";
+
+enum DonationStep {
+  FORM,
+  PAYMENT,
+  CONFIRMATION
+}
 
 const DonationForm = () => {
   const { toast } = useToast();
-  const [amount, setAmount] = useState(1);
-  const [step, setStep] = useState(1);
+  const { address, isConnected, connect, isConnecting, balance } = useWallet();
   
-  const bnbWalletAddress = "0x1234567890abcdef1234567890abcdef12345678";
+  const [amount, setAmount] = useState(1);
+  const [step, setStep] = useState<DonationStep>(DonationStep.FORM);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [txHash, setTxHash] = useState<string | null>(null);
+  const [txStatus, setTxStatus] = useState<'pending' | 'confirmed' | 'failed' | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  
+  // Check transaction status
+  useEffect(() => {
+    if (!txHash || txStatus === 'confirmed') return;
+    
+    const checkTransactionStatus = async () => {
+      const receipt = await getTransactionReceipt(txHash);
+      
+      if (receipt) {
+        if (receipt.status === '0x1') {
+          setTxStatus('confirmed');
+          toast({
+            title: "Donation Confirmed",
+            description: "Your donation has been confirmed on the blockchain!",
+          });
+        } else if (receipt.status === '0x0') {
+          setTxStatus('failed');
+          toast({
+            title: "Transaction Failed",
+            description: "Your transaction failed. Please try again.",
+            variant: "destructive"
+          });
+        }
+      }
+    };
+    
+    const interval = setInterval(checkTransactionStatus, 5000);
+    return () => clearInterval(interval);
+  }, [txHash, txStatus, toast]);
   
   const handleAmountChange = (value: number[]) => {
     setAmount(value[0]);
   };
   
   const handleCopyAddress = () => {
-    navigator.clipboard.writeText(bnbWalletAddress);
+    navigator.clipboard.writeText(DONATION_ADDRESS);
     toast({
       title: "Wallet address copied!",
       description: "BNB wallet address has been copied to your clipboard.",
@@ -29,11 +72,309 @@ const DonationForm = () => {
   
   const handleDonationSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setStep(2);
+    setStep(DonationStep.PAYMENT);
   };
   
+  const handleConnectWallet = async () => {
+    await connect();
+  };
+  
+  const handleSendDonation = async () => {
+    if (!address) {
+      toast({
+        title: "Wallet not connected",
+        description: "Please connect your wallet first.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // Check if user has enough balance
+    if (parseFloat(balance) < amount) {
+      toast({
+        title: "Insufficient balance",
+        description: `You need at least ${amount} BNB in your wallet.`,
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    setIsProcessing(true);
+    
+    try {
+      const result = await sendDonation(address, amount);
+      
+      if (result.success && result.txHash) {
+        setTxHash(result.txHash);
+        setTxStatus('pending');
+        setStep(DonationStep.CONFIRMATION);
+        
+        // Record donation details here if needed
+        console.log({
+          amount,
+          name: name || "Anonymous",
+          email,
+          message,
+          txHash: result.txHash,
+          donorAddress: address
+        });
+        
+        toast({
+          title: "Donation sent!",
+          description: "Your transaction has been submitted to the blockchain.",
+        });
+      } else {
+        toast({
+          title: "Transaction failed",
+          description: result.error || "Failed to send donation. Please try again.",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive"
+      });
+      console.error("Donation error:", error);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+  
+  const resetForm = () => {
+    setStep(DonationStep.FORM);
+    setTxHash(null);
+    setTxStatus(null);
+  };
+  
+  const renderDonationForm = () => (
+    <form onSubmit={handleDonationSubmit}>
+      <div className="space-y-6">
+        <div className="space-y-2">
+          <Label htmlFor="amount">Donation Amount (BNB)</Label>
+          <div className="text-3xl font-bold text-center my-2">{amount} BNB</div>
+          <Slider
+            id="amount"
+            min={0.1}
+            max={10}
+            step={0.1}
+            value={[amount]}
+            onValueChange={handleAmountChange}
+            className="my-6"
+          />
+          <div className="flex justify-between text-sm text-gray-500">
+            <span>0.1 BNB</span>
+            <span>10 BNB</span>
+          </div>
+        </div>
+        
+        <div className="space-y-2">
+          <Label htmlFor="name">Your Name (Optional)</Label>
+          <Input 
+            id="name" 
+            placeholder="Anonymous" 
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </div>
+        
+        <div className="space-y-2">
+          <Label htmlFor="email">Email Address (Optional)</Label>
+          <Input 
+            id="email" 
+            type="email" 
+            placeholder="For donation receipt" 
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+        
+        <div className="space-y-2">
+          <Label htmlFor="message">Message (Optional)</Label>
+          <Input 
+            id="message" 
+            placeholder="Add a message of support" 
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+          />
+        </div>
+        
+        <Button type="submit" className="w-full bg-earthquake-accent hover:bg-earthquake-accent/90">
+          Continue to Payment
+        </Button>
+      </div>
+    </form>
+  );
+  
+  const renderPaymentStep = () => (
+    <div className="space-y-6">
+      <div className="p-4 bg-earthquake-primary/10 rounded-lg">
+        <div className="flex justify-between items-center mb-2">
+          <span className="font-medium">Amount:</span>
+          <span className="font-bold">{amount} BNB</span>
+        </div>
+        <div className="flex justify-between items-center">
+          <span className="font-medium">Network:</span>
+          <span>Binance Smart Chain (BSC)</span>
+        </div>
+      </div>
+      
+      {!isConnected ? (
+        <div className="space-y-4">
+          <div className="text-center">
+            <p className="mb-4">Connect your wallet to continue with the donation</p>
+            <Button 
+              onClick={handleConnectWallet} 
+              disabled={isConnecting}
+              className="mx-auto"
+            >
+              {isConnecting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Connecting...
+                </>
+              ) : (
+                <>
+                  <Wallet className="mr-2 h-4 w-4" />
+                  Connect Wallet
+                </>
+              )}
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          <div className="p-4 bg-green-50 border border-green-100 rounded-lg">
+            <div className="flex items-center gap-2 text-green-600 mb-2">
+              <Check className="h-5 w-5" />
+              <span className="font-medium">Wallet Connected</span>
+            </div>
+            <p className="text-sm text-gray-600">
+              Your wallet <span className="font-mono">{address?.substring(0, 10)}...</span> is ready.
+            </p>
+            <p className="text-sm font-medium mt-2">
+              Available balance: {balance} BNB
+            </p>
+          </div>
+          
+          <Button 
+            className="w-full bg-earthquake-accent hover:bg-earthquake-accent/90"
+            onClick={handleSendDonation}
+            disabled={isProcessing || parseFloat(balance) < amount}
+          >
+            {isProcessing ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Processing...
+              </>
+            ) : (
+              'Send Donation'
+            )}
+          </Button>
+          
+          {parseFloat(balance) < amount && (
+            <p className="text-sm text-red-500 text-center">
+              Insufficient balance. You need at least {amount} BNB.
+            </p>
+          )}
+        </div>
+      )}
+      
+      <div className="space-y-2">
+        <p className="text-sm text-gray-500 font-medium">Alternative method:</p>
+        <Label>Send BNB directly to this address:</Label>
+        <div className="flex">
+          <Input 
+            value={DONATION_ADDRESS} 
+            readOnly 
+            className="rounded-r-none font-mono text-sm"
+          />
+          <Button 
+            variant="outline" 
+            className="rounded-l-none border-l-0" 
+            onClick={handleCopyAddress}
+          >
+            <Copy className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+      
+      <div className="bg-yellow-50 border border-yellow-100 rounded-md p-4 text-sm text-yellow-800 flex gap-2">
+        <AlertCircle className="h-5 w-5 flex-shrink-0" />
+        <div>
+          <p className="font-medium">Important</p>
+          <p>Only send BNB on the Binance Smart Chain (BSC) network. Sending any other token or using a different network may result in loss of funds.</p>
+        </div>
+      </div>
+      
+      <Button 
+        variant="outline" 
+        className="w-full"
+        onClick={() => setStep(DonationStep.FORM)}
+      >
+        Back to donation details
+      </Button>
+    </div>
+  );
+  
+  const renderConfirmationStep = () => (
+    <div className="space-y-6">
+      <div className="flex justify-center">
+        <div className="bg-green-100 p-3 rounded-full">
+          <Check className="h-8 w-8 text-green-600" />
+        </div>
+      </div>
+      
+      <h3 className="text-xl font-bold text-center">Donation Submitted!</h3>
+      
+      <div className="p-4 bg-earthquake-primary/10 rounded-lg">
+        <div className="flex justify-between items-center mb-2">
+          <span className="font-medium">Amount:</span>
+          <span className="font-bold">{amount} BNB</span>
+        </div>
+        <div className="flex justify-between items-center mb-2">
+          <span className="font-medium">Status:</span>
+          <span className={`font-medium ${
+            txStatus === 'confirmed' ? 'text-green-600' : 
+            txStatus === 'failed' ? 'text-red-600' : 
+            'text-yellow-600'
+          }`}>
+            {txStatus === 'confirmed' ? 'Confirmed' : 
+             txStatus === 'failed' ? 'Failed' : 
+             'Pending'}
+          </span>
+        </div>
+        <div className="flex justify-between items-center">
+          <span className="font-medium">Transaction:</span>
+          <a 
+            href={`https://bscscan.com/tx/${txHash}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-earthquake-primary hover:underline flex items-center gap-1"
+          >
+            <span className="font-mono text-sm">{txHash?.substring(0, 10)}...</span>
+            <ExternalLink className="h-3 w-3" />
+          </a>
+        </div>
+      </div>
+      
+      <div className="text-center text-sm text-gray-600">
+        <p>Thank you for your generous support!</p>
+        <p>Your donation will help victims of the 7.7 magnitude earthquake.</p>
+      </div>
+      
+      <Button
+        onClick={resetForm}
+        className="w-full"
+      >
+        Make Another Donation
+      </Button>
+    </div>
+  );
+  
   return (
-    <Card className="w-full max-w-md mx-auto p-6 shadow-lg">
+    <Card className="w-full max-w-md mx-auto p-6 shadow-lg" id="donate">
       <div className="flex justify-center mb-6">
         <div className="bg-earthquake-primary/10 p-3 rounded-full">
           <Bitcoin className="h-8 w-8 text-earthquake-primary" />
@@ -42,99 +383,9 @@ const DonationForm = () => {
       
       <h2 className="text-2xl font-bold text-center mb-6">Donate BNB</h2>
       
-      {step === 1 ? (
-        <form onSubmit={handleDonationSubmit}>
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="amount">Donation Amount (BNB)</Label>
-              <div className="text-3xl font-bold text-center my-2">{amount} BNB</div>
-              <Slider
-                id="amount"
-                min={0.1}
-                max={10}
-                step={0.1}
-                value={[amount]}
-                onValueChange={handleAmountChange}
-                className="my-6"
-              />
-              <div className="flex justify-between text-sm text-gray-500">
-                <span>0.1 BNB</span>
-                <span>10 BNB</span>
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="name">Your Name (Optional)</Label>
-              <Input id="name" placeholder="Anonymous" />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="email">Email Address (Optional)</Label>
-              <Input id="email" type="email" placeholder="For donation receipt" />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="message">Message (Optional)</Label>
-              <Input id="message" placeholder="Add a message of support" />
-            </div>
-            
-            <Button type="submit" className="w-full bg-earthquake-accent hover:bg-earthquake-accent/90">
-              Continue to Payment
-            </Button>
-          </div>
-        </form>
-      ) : (
-        <div className="space-y-6">
-          <div className="p-4 bg-earthquake-primary/10 rounded-lg">
-            <div className="flex justify-between items-center mb-2">
-              <span className="font-medium">Amount:</span>
-              <span className="font-bold">{amount} BNB</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="font-medium">Network:</span>
-              <span>Binance Smart Chain (BSC)</span>
-            </div>
-          </div>
-          
-          <div className="space-y-2">
-            <Label>Send BNB to this address:</Label>
-            <div className="flex">
-              <Input 
-                value={bnbWalletAddress} 
-                readOnly 
-                className="rounded-r-none font-mono text-sm"
-              />
-              <Button 
-                variant="outline" 
-                className="rounded-l-none border-l-0" 
-                onClick={handleCopyAddress}
-              >
-                <Copy className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-          
-          <div className="bg-yellow-50 border border-yellow-100 rounded-md p-4 text-sm text-yellow-800 flex gap-2">
-            <AlertCircle className="h-5 w-5 flex-shrink-0" />
-            <div>
-              <p className="font-medium">Important</p>
-              <p>Only send BNB on the Binance Smart Chain (BSC) network. Sending any other token or using a different network may result in loss of funds.</p>
-            </div>
-          </div>
-          
-          <Button 
-            variant="outline" 
-            className="w-full"
-            onClick={() => setStep(1)}
-          >
-            Back to donation details
-          </Button>
-          
-          <div className="text-center text-sm text-gray-500">
-            After sending, your donation will be verified on the blockchain and added to our transparency report.
-          </div>
-        </div>
-      )}
+      {step === DonationStep.FORM && renderDonationForm()}
+      {step === DonationStep.PAYMENT && renderPaymentStep()}
+      {step === DonationStep.CONFIRMATION && renderConfirmationStep()}
     </Card>
   );
 };
