@@ -3,7 +3,17 @@ import React from 'react';
 import { Button } from "@/components/ui/button";
 import { HandCoins, AlertCircle } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useBlockchainData } from '@/hooks/useBlockchainData';
+import { Skeleton } from "@/components/ui/skeleton";
+
 const Hero = () => {
+  const { totalDonations, donorCount, isLoading } = useBlockchainData();
+  
+  // Goal is 100 BNB
+  const goalAmount = 100;
+  // Calculate percentage for visual indication (capped at 100%)
+  const percentageRaised = Math.min((parseFloat(totalDonations) / goalAmount) * 100, 100);
+  
   return <div className="relative overflow-hidden bg-gradient-to-b from-earthquake-dark to-earthquake-primary text-white">
       <div className="absolute inset-0 z-0 opacity-20 bg-[url('https://images5.alphacoders.com/645/645897.jpg')] bg-cover bg-center"></div>
       
@@ -40,23 +50,49 @@ const Hero = () => {
           <div className="mt-8 bg-black/20 p-4 rounded-lg">
             <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
               <div className="text-center sm:text-left">
-                <div className="text-3xl font-bold">24.8 BNB</div>
-                <div className="text-sm text-white/70">Raised So Far</div>
+                {isLoading ? (
+                  <>
+                    <Skeleton className="h-8 w-24 bg-white/10 mb-1" />
+                    <Skeleton className="h-4 w-28 bg-white/10" />
+                  </>
+                ) : (
+                  <>
+                    <div className="text-3xl font-bold">{totalDonations} BNB</div>
+                    <div className="text-sm text-white/70">Raised So Far</div>
+                  </>
+                )}
               </div>
               
               <div className="h-10 w-px bg-white/20 hidden sm:block"></div>
               
               <div className="text-center">
-                <div className="text-3xl font-bold">142</div>
-                <div className="text-sm text-white/70">Donors</div>
+                {isLoading ? (
+                  <>
+                    <Skeleton className="h-8 w-16 bg-white/10 mb-1" />
+                    <Skeleton className="h-4 w-20 bg-white/10" />
+                  </>
+                ) : (
+                  <>
+                    <div className="text-3xl font-bold">{donorCount}</div>
+                    <div className="text-sm text-white/70">Donors</div>
+                  </>
+                )}
               </div>
               
               <div className="h-10 w-px bg-white/20 hidden sm:block"></div>
               
               <div className="text-center sm:text-right">
-                <div className="text-3xl font-bold">100 BNB</div>
+                <div className="text-3xl font-bold">{goalAmount} BNB</div>
                 <div className="text-sm text-white/70">Goal</div>
               </div>
+            </div>
+            
+            {/* Progress indicator */}
+            <div className="mt-4 w-full bg-white/10 rounded-full h-2 overflow-hidden">
+              <div 
+                className="bg-earthquake-accent h-full rounded-full transition-all duration-1000 ease-out"
+                style={{ width: `${percentageRaised}%` }}
+              ></div>
             </div>
           </div>
         </div>
