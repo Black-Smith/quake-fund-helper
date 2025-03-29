@@ -316,7 +316,7 @@ const DonationForm = () => {
           <img 
             src="https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/512/Binance-Coin-BNB-icon.png" 
             alt="BNB Icon" 
-            className="h-8 w-8"
+            className="h-12 w-12"
           />
         </div>
       </div>
