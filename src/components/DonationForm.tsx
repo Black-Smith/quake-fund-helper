@@ -54,6 +54,15 @@ const DonationForm = () => {
     setAmount(value[0]);
   };
 
+  const handleNumberInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseFloat(e.target.value);
+    if (!isNaN(value)) {
+      // Ensure the value is between the min and max
+      const clampedValue = Math.min(Math.max(value, 0.01), 100);
+      setAmount(clampedValue);
+    }
+  };
+
   const handleCopyAddress = () => {
     navigator.clipboard.writeText(DONATION_ADDRESS);
     toast({
@@ -157,6 +166,19 @@ const DonationForm = () => {
       <div className="space-y-6">
         <div className="space-y-2">
           <Label htmlFor="amount">Donation Amount (BNB)</Label>
+          <div className="flex items-center gap-2 mb-2">
+            <Input
+              type="number"
+              id="amount-input"
+              value={amount}
+              onChange={handleNumberInputChange}
+              min={0.01}
+              max={100}
+              step={0.01}
+              className="w-full"
+            />
+            <span className="font-medium">BNB</span>
+          </div>
           <div className="text-3xl font-bold text-center my-2">{amount} BNB</div>
           <Slider id="amount" min={0.01} max={100} step={0.01} value={[amount]} onValueChange={handleAmountChange} className="my-6" />
           <div className="flex justify-between text-sm text-gray-500">
