@@ -9,6 +9,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 const Hero = () => {
   const { totalDonations, donorCount, isLoading } = useBlockchainData();
   
+  // Goal is 100 BNB
+  const goalAmount = 100;
+  // Calculate percentage for visual indication (capped at 100%)
+  const percentageRaised = Math.min((parseFloat(totalDonations) / goalAmount) * 100, 100);
+  
   return <div className="relative overflow-hidden bg-gradient-to-b from-earthquake-dark to-earthquake-primary text-white">
       <div className="absolute inset-0 z-0 opacity-20 bg-[url('https://images5.alphacoders.com/645/645897.jpg')] bg-cover bg-center"></div>
       
@@ -73,6 +78,21 @@ const Hero = () => {
                   </>
                 )}
               </div>
+              
+              <div className="h-10 w-px bg-white/20 hidden sm:block"></div>
+              
+              <div className="text-center sm:text-right">
+                <div className="text-3xl font-bold">{goalAmount} BNB</div>
+                <div className="text-sm text-white/70">Goal</div>
+              </div>
+            </div>
+            
+            {/* Progress indicator */}
+            <div className="mt-4 w-full bg-white/10 rounded-full h-2 overflow-hidden">
+              <div 
+                className="bg-earthquake-accent h-full rounded-full transition-all duration-1000 ease-out"
+                style={{ width: `${percentageRaised}%` }}
+              ></div>
             </div>
           </div>
         </div>
