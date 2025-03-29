@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Earth, HandCoins, Heart, Wallet, ChevronDown, LogOut } from "lucide-react";
+import { Earth, HandCoins, Heart, Wallet, ChevronDown, LogOut, AlertTriangle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useWallet } from "@/contexts/WalletContext";
 import {
@@ -12,9 +12,36 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "@/components/ui/alert";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const Header = () => {
-  const { isConnected, shortAddress, balance, connect, disconnect, isConnecting, walletType } = useWallet();
+  const { 
+    isConnected, 
+    shortAddress, 
+    balance, 
+    connect, 
+    disconnect, 
+    isConnecting, 
+    walletType, 
+    isCorrectNetwork,
+    switchNetwork,
+    networkName
+  } = useWallet();
 
   return (
     <header className="sticky top-0 z-50 w-full bg-white border-b shadow-sm">
@@ -37,6 +64,32 @@ const Header = () => {
         </nav>
 
         <div className="flex items-center space-x-4">
+          {isConnected && !isCorrectNetwork && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" size="sm" className="flex items-center gap-2">
+                  <AlertTriangle className="h-4 w-4" />
+                  <span className="hidden sm:inline">Wrong Network</span>
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Wrong Network Detected</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This application requires the Binance Smart Chain network to function properly. 
+                    Please switch to BSC to continue using the application.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={switchNetwork}>
+                    Switch to {networkName}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
+          
           {isConnected ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -86,6 +139,19 @@ const Header = () => {
           </Link>
         </div>
       </div>
+      
+      {isConnected && !isCorrectNetwork && (
+        <Alert variant="destructive" className="rounded-none">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle>Wrong Network</AlertTitle>
+          <AlertDescription className="flex items-center justify-between">
+            <span>Please switch to Binance Smart Chain network for this application to work properly.</span>
+            <Button size="sm" variant="outline" onClick={switchNetwork} className="ml-4 whitespace-nowrap">
+              Switch Network
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
     </header>
   );
 };

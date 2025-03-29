@@ -52,6 +52,91 @@ export const isWalletConnected = async (): Promise<boolean> => {
   }
 };
 
+// Check if the current network is BSC
+export const isBscNetwork = async (): Promise<boolean> => {
+  try {
+    if (!window.ethereum) return false;
+    
+    const chainId = await window.ethereum.request({
+      method: 'eth_chainId'
+    });
+    
+    return chainId === BSC_NETWORK.chainId;
+  } catch (error) {
+    console.error("Error checking network:", error);
+    return false;
+  }
+};
+
+// Switch to BSC network
+export const switchToBscNetwork = async (): Promise<boolean> => {
+  try {
+    if (!window.ethereum) {
+      toast({
+        title: "Wallet not found",
+        description: "Please install MetaMask or another BSC-compatible wallet.",
+        variant: "destructive"
+      });
+      return false;
+    }
+    
+    try {
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: BSC_NETWORK.chainId }],
+      });
+      
+      toast({
+        title: "Network Switched",
+        description: "Successfully switched to Binance Smart Chain.",
+      });
+      
+      return true;
+    } catch (switchError: any) {
+      // This error code indicates that the chain has not been added to the wallet
+      if (switchError.code === 4902) {
+        try {
+          await window.ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [BSC_NETWORK],
+          });
+          
+          toast({
+            title: "Network Added",
+            description: "Binance Smart Chain has been added to your wallet.",
+          });
+          
+          return true;
+        } catch (addError) {
+          console.error("Error adding BSC network:", addError);
+          toast({
+            title: "Network Error",
+            description: "Could not add Binance Smart Chain to your wallet.",
+            variant: "destructive"
+          });
+          return false;
+        }
+      }
+      
+      console.error("Error switching to BSC network:", switchError);
+      toast({
+        title: "Network Error",
+        description: "Could not switch to Binance Smart Chain.",
+        variant: "destructive"
+      });
+      return false;
+    }
+  } catch (error) {
+    console.error("Error switching to BSC network:", error);
+    toast({
+      title: "Network Error",
+      description: "An unexpected error occurred when switching networks.",
+      variant: "destructive"
+    });
+    return false;
+  }
+};
+
 // Connect wallet
 export const connectWallet = async (): Promise<string | null> => {
   try {
@@ -70,29 +155,9 @@ export const connectWallet = async (): Promise<string | null> => {
     });
     
     // Switch to BSC network if needed
-    try {
-      await window.ethereum.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: BSC_NETWORK.chainId }],
-      });
-    } catch (switchError: any) {
-      // This error code indicates that the chain has not been added to MetaMask.
-      if (switchError.code === 4902) {
-        try {
-          await window.ethereum.request({
-            method: 'wallet_addEthereumChain',
-            params: [BSC_NETWORK],
-          });
-        } catch (addError) {
-          console.error("Error adding BSC network:", addError);
-          toast({
-            title: "Network Error",
-            description: "Could not add Binance Smart Chain to your wallet.",
-            variant: "destructive"
-          });
-          return null;
-        }
-      }
+    const isOnBsc = await isBscNetwork();
+    if (!isOnBsc) {
+      await switchToBscNetwork();
     }
     
     if (accounts && accounts.length > 0) {
@@ -144,6 +209,15 @@ export const sendDonation = async (
       return {
         success: false,
         error: "No wallet provider found"
+      };
+    }
+    
+    // Check if on BSC network
+    const isOnBsc = await isBscNetwork();
+    if (!isOnBsc) {
+      return {
+        success: false,
+        error: "Please switch to Binance Smart Chain network before donating"
       };
     }
     

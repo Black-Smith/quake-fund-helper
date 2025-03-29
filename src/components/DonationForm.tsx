@@ -5,10 +5,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Card } from "@/components/ui/card";
-import { Bitcoin, Copy, AlertCircle, Wallet, Loader2, Check, ExternalLink } from "lucide-react";
+import { Bitcoin, Copy, AlertCircle, Wallet, Loader2, Check, ExternalLink, AlertTriangle } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useWallet } from "@/contexts/WalletContext";
 import { DONATION_ADDRESS, sendDonation, getTransactionReceipt } from "@/lib/blockchain";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 enum DonationStep {
   FORM,
@@ -18,7 +19,16 @@ enum DonationStep {
 
 const DonationForm = () => {
   const { toast } = useToast();
-  const { address, isConnected, connect, isConnecting, balance } = useWallet();
+  const { 
+    address, 
+    isConnected, 
+    connect, 
+    isConnecting, 
+    balance, 
+    isCorrectNetwork,
+    switchNetwork,
+    networkName
+  } = useWallet();
   
   const [amount, setAmount] = useState(1);
   const [step, setStep] = useState<DonationStep>(DonationStep.FORM);
@@ -84,6 +94,16 @@ const DonationForm = () => {
       toast({
         title: "Wallet not connected",
         description: "Please connect your wallet first.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // Check if user is on the correct network
+    if (!isCorrectNetwork) {
+      toast({
+        title: "Wrong Network",
+        description: `Please switch to ${networkName} before making a donation.`,
         variant: "destructive"
       });
       return;
@@ -216,9 +236,22 @@ const DonationForm = () => {
         </div>
         <div className="flex justify-between items-center">
           <span className="font-medium">Network:</span>
-          <span>Binance Smart Chain (BSC)</span>
+          <span>{networkName}</span>
         </div>
       </div>
+
+      {isConnected && !isCorrectNetwork && (
+        <Alert variant="destructive" className="mb-4">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle>Wrong Network</AlertTitle>
+          <AlertDescription className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            <span>Please switch to {networkName} to make a donation.</span>
+            <Button size="sm" variant="outline" onClick={switchNetwork} className="whitespace-nowrap">
+              Switch Network
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
       
       {!isConnected ? (
         <div className="space-y-4">
@@ -261,7 +294,7 @@ const DonationForm = () => {
           <Button 
             className="w-full bg-earthquake-accent hover:bg-earthquake-accent/90"
             onClick={handleSendDonation}
-            disabled={isProcessing || parseFloat(balance) < amount}
+            disabled={isProcessing || !isCorrectNetwork || parseFloat(balance) < amount}
           >
             {isProcessing ? (
               <>
@@ -273,7 +306,13 @@ const DonationForm = () => {
             )}
           </Button>
           
-          {parseFloat(balance) < amount && (
+          {!isCorrectNetwork && (
+            <p className="text-sm text-red-500 text-center">
+              Please switch to {networkName} to make a donation.
+            </p>
+          )}
+          
+          {isCorrectNetwork && parseFloat(balance) < amount && (
             <p className="text-sm text-red-500 text-center">
               Insufficient balance. You need at least {amount} BNB.
             </p>
@@ -304,7 +343,7 @@ const DonationForm = () => {
         <AlertCircle className="h-5 w-5 flex-shrink-0" />
         <div>
           <p className="font-medium">Important</p>
-          <p>Only send BNB on the Binance Smart Chain (BSC) network. Sending any other token or using a different network may result in loss of funds.</p>
+          <p>Only send BNB on the {networkName} network. Sending any other token or using a different network may result in loss of funds.</p>
         </div>
       </div>
       

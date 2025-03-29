@@ -1,9 +1,18 @@
 
 import React, { createContext, useState, useEffect, useContext } from "react";
-import { connectWallet, isWalletConnected, getWalletBalance, formatAddress, WalletProvider as WalletProviderType } from "@/lib/blockchain";
+import { 
+  connectWallet, 
+  isWalletConnected, 
+  getWalletBalance, 
+  formatAddress, 
+  WalletProvider as WalletProviderType,
+  isBscNetwork,
+  switchToBscNetwork,
+  BSC_NETWORK
+} from "@/lib/blockchain";
 import { toast } from "@/hooks/use-toast";
 
-// Update the WalletContextType type to include disconnect method
+// Update the WalletContextType type to include network status
 type WalletContextType = {
   address: string | null;
   shortAddress: string;
@@ -13,6 +22,9 @@ type WalletContextType = {
   connect: () => Promise<void>;
   disconnect: () => void;
   walletType: string | null;
+  isCorrectNetwork: boolean;
+  switchNetwork: () => Promise<void>;
+  networkName: string;
 };
 
 // Update the global declaration to use WalletProviderType
@@ -31,6 +43,9 @@ const WalletContext = createContext<WalletContextType>({
   connect: async () => {},
   disconnect: () => {},
   walletType: null,
+  isCorrectNetwork: false,
+  switchNetwork: async () => {},
+  networkName: BSC_NETWORK.chainName,
 });
 
 export const useWallet = () => useContext(WalletContext);
@@ -41,6 +56,7 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [isConnected, setIsConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   const [walletType, setWalletType] = useState<string | null>(null);
+  const [isCorrectNetwork, setIsCorrectNetwork] = useState(false);
 
   // Detect wallet type
   const detectWalletType = () => {
@@ -63,6 +79,18 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   };
 
+  // Check network status
+  const checkNetworkStatus = async () => {
+    const onCorrectNetwork = await isBscNetwork();
+    setIsCorrectNetwork(onCorrectNetwork);
+  };
+
+  // Switch to BSC network
+  const switchNetwork = async () => {
+    await switchToBscNetwork();
+    await checkNetworkStatus();
+  };
+
   // Check if wallet is already connected on mount
   useEffect(() => {
     const checkWallet = async () => {
@@ -75,6 +103,7 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           const bal = await getWalletBalance(accounts[0]);
           setBalance(bal);
           setWalletType(detectWalletType());
+          await checkNetworkStatus();
         }
       }
     };
@@ -96,14 +125,22 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       }
     };
     
+    // Listen for network changes
+    const handleChainChanged = () => {
+      checkNetworkStatus();
+      // Reload the page on chain change as recommended by MetaMask
+      window.location.reload();
+    };
+    
     if (window.ethereum) {
       window.ethereum.on('accountsChanged', handleAccountsChanged);
-      window.ethereum.on('chainChanged', () => window.location.reload());
+      window.ethereum.on('chainChanged', handleChainChanged);
     }
     
     return () => {
       if (window.ethereum) {
         window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
+        window.ethereum.removeListener('chainChanged', handleChainChanged);
       }
     };
   }, []);
@@ -118,6 +155,7 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         const bal = await getWalletBalance(account);
         setBalance(bal);
         setWalletType(detectWalletType());
+        await checkNetworkStatus();
       }
     } catch (error) {
       console.error("Failed to connect wallet:", error);
@@ -161,7 +199,10 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         isConnecting,
         connect,
         disconnect,
-        walletType
+        walletType,
+        isCorrectNetwork,
+        switchNetwork,
+        networkName: BSC_NETWORK.chainName
       }}
     >
       {children}
