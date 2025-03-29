@@ -1,9 +1,14 @@
+
 import { toast } from "@/hooks/use-toast";
 
 // Types for wallet connection
 export type WalletProvider = {
   isMetaMask?: boolean;
   isTrust?: boolean;
+  isCoinbaseWallet?: boolean;
+  isTokenPocket?: boolean;
+  isMathWallet?: boolean;
+  isBinanceChainWallet?: boolean;
   request: (args: {method: string; params?: any[]}) => Promise<any>;
   on: (event: string, handler: (...args: any[]) => void) => void;
   removeListener: (event: string, handler: (...args: any[]) => void) => void;
