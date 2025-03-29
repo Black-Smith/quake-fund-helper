@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,26 +9,25 @@ import { useToast } from "@/components/ui/use-toast";
 import { useWallet } from "@/contexts/WalletContext";
 import { DONATION_ADDRESS, sendDonation, getTransactionReceipt } from "@/lib/blockchain";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-
 enum DonationStep {
   FORM,
   PAYMENT,
-  CONFIRMATION
+  CONFIRMATION,
 }
-
 const DonationForm = () => {
-  const { toast } = useToast();
-  const { 
-    address, 
-    isConnected, 
-    connect, 
-    isConnecting, 
-    balance, 
+  const {
+    toast
+  } = useToast();
+  const {
+    address,
+    isConnected,
+    connect,
+    isConnecting,
+    balance,
     isCorrectNetwork,
     switchNetwork,
     networkName
   } = useWallet();
-  
   const [amount, setAmount] = useState(1);
   const [step, setStep] = useState<DonationStep>(DonationStep.FORM);
   const [name, setName] = useState("");
@@ -38,20 +36,18 @@ const DonationForm = () => {
   const [txHash, setTxHash] = useState<string | null>(null);
   const [txStatus, setTxStatus] = useState<'pending' | 'confirmed' | 'failed' | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  
+
   // Check transaction status
   useEffect(() => {
     if (!txHash || txStatus === 'confirmed') return;
-    
     const checkTransactionStatus = async () => {
       const receipt = await getTransactionReceipt(txHash);
-      
       if (receipt) {
         if (receipt.status === '0x1') {
           setTxStatus('confirmed');
           toast({
             title: "Donation Confirmed",
-            description: "Your donation has been confirmed on the blockchain!",
+            description: "Your donation has been confirmed on the blockchain!"
           });
         } else if (receipt.status === '0x0') {
           setTxStatus('failed');
@@ -63,32 +59,26 @@ const DonationForm = () => {
         }
       }
     };
-    
     const interval = setInterval(checkTransactionStatus, 5000);
     return () => clearInterval(interval);
   }, [txHash, txStatus, toast]);
-  
   const handleAmountChange = (value: number[]) => {
     setAmount(value[0]);
   };
-  
   const handleCopyAddress = () => {
     navigator.clipboard.writeText(DONATION_ADDRESS);
     toast({
       title: "Wallet address copied!",
-      description: "BNB wallet address has been copied to your clipboard.",
+      description: "BNB wallet address has been copied to your clipboard."
     });
   };
-  
   const handleDonationSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setStep(DonationStep.PAYMENT);
   };
-  
   const handleConnectWallet = async () => {
     await connect();
   };
-  
   const handleSendDonation = async () => {
     if (!address) {
       toast({
@@ -98,7 +88,7 @@ const DonationForm = () => {
       });
       return;
     }
-    
+
     // Check if user is on the correct network
     if (!isCorrectNetwork) {
       toast({
@@ -108,7 +98,7 @@ const DonationForm = () => {
       });
       return;
     }
-    
+
     // Check if user has enough balance
     if (parseFloat(balance) < amount) {
       toast({
@@ -118,17 +108,14 @@ const DonationForm = () => {
       });
       return;
     }
-    
     setIsProcessing(true);
-    
     try {
       const result = await sendDonation(address, amount);
-      
       if (result.success && result.txHash) {
         setTxHash(result.txHash);
         setTxStatus('pending');
         setStep(DonationStep.CONFIRMATION);
-        
+
         // Record donation details here if needed
         console.log({
           amount,
@@ -138,10 +125,9 @@ const DonationForm = () => {
           txHash: result.txHash,
           donorAddress: address
         });
-        
         toast({
           title: "Donation sent!",
-          description: "Your transaction has been submitted to the blockchain.",
+          description: "Your transaction has been submitted to the blockchain."
         });
       } else {
         toast({
@@ -161,74 +147,35 @@ const DonationForm = () => {
       setIsProcessing(false);
     }
   };
-  
   const resetForm = () => {
     setStep(DonationStep.FORM);
     setTxHash(null);
     setTxStatus(null);
   };
-  
-  const renderDonationForm = () => (
-    <form onSubmit={handleDonationSubmit}>
+  const renderDonationForm = () => <form onSubmit={handleDonationSubmit}>
       <div className="space-y-6">
         <div className="space-y-2">
           <Label htmlFor="amount">Donation Amount (BNB)</Label>
           <div className="text-3xl font-bold text-center my-2">{amount} BNB</div>
-          <Slider
-            id="amount"
-            min={0.1}
-            max={10}
-            step={0.1}
-            value={[amount]}
-            onValueChange={handleAmountChange}
-            className="my-6"
-          />
+          <Slider id="amount" min={0.1} max={10} step={0.1} value={[amount]} onValueChange={handleAmountChange} className="my-6" />
           <div className="flex justify-between text-sm text-gray-500">
             <span>0.1 BNB</span>
             <span>10 BNB</span>
           </div>
         </div>
         
-        <div className="space-y-2">
-          <Label htmlFor="name">Your Name (Optional)</Label>
-          <Input 
-            id="name" 
-            placeholder="Anonymous" 
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-        </div>
         
-        <div className="space-y-2">
-          <Label htmlFor="email">Email Address (Optional)</Label>
-          <Input 
-            id="email" 
-            type="email" 
-            placeholder="For donation receipt" 
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
         
-        <div className="space-y-2">
-          <Label htmlFor="message">Message (Optional)</Label>
-          <Input 
-            id="message" 
-            placeholder="Add a message of support" 
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-          />
-        </div>
+        
+        
+        
         
         <Button type="submit" className="w-full bg-earthquake-accent hover:bg-earthquake-accent/90">
           Continue to Payment
         </Button>
       </div>
-    </form>
-  );
-  
-  const renderPaymentStep = () => (
-    <div className="space-y-6">
+    </form>;
+  const renderPaymentStep = () => <div className="space-y-6">
       <div className="p-4 bg-earthquake-primary/10 rounded-lg">
         <div className="flex justify-between items-center mb-2">
           <span className="font-medium">Amount:</span>
@@ -240,8 +187,7 @@ const DonationForm = () => {
         </div>
       </div>
 
-      {isConnected && !isCorrectNetwork && (
-        <Alert variant="destructive" className="mb-4">
+      {isConnected && !isCorrectNetwork && <Alert variant="destructive" className="mb-4">
           <AlertTriangle className="h-4 w-4" />
           <AlertTitle>Wrong Network</AlertTitle>
           <AlertDescription className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
@@ -250,34 +196,22 @@ const DonationForm = () => {
               Switch Network
             </Button>
           </AlertDescription>
-        </Alert>
-      )}
+        </Alert>}
       
-      {!isConnected ? (
-        <div className="space-y-4">
+      {!isConnected ? <div className="space-y-4">
           <div className="text-center">
             <p className="mb-4">Connect your wallet to continue with the donation</p>
-            <Button 
-              onClick={handleConnectWallet} 
-              disabled={isConnecting}
-              className="mx-auto"
-            >
-              {isConnecting ? (
-                <>
+            <Button onClick={handleConnectWallet} disabled={isConnecting} className="mx-auto">
+              {isConnecting ? <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Connecting...
-                </>
-              ) : (
-                <>
+                </> : <>
                   <Wallet className="mr-2 h-4 w-4" />
                   Connect Wallet
-                </>
-              )}
+                </>}
             </Button>
           </div>
-        </div>
-      ) : (
-        <div className="space-y-4">
+        </div> : <div className="space-y-4">
           <div className="p-4 bg-green-50 border border-green-100 rounded-lg">
             <div className="flex items-center gap-2 text-green-600 mb-2">
               <Check className="h-5 w-5" />
@@ -291,49 +225,28 @@ const DonationForm = () => {
             </p>
           </div>
           
-          <Button 
-            className="w-full bg-earthquake-accent hover:bg-earthquake-accent/90"
-            onClick={handleSendDonation}
-            disabled={isProcessing || !isCorrectNetwork || parseFloat(balance) < amount}
-          >
-            {isProcessing ? (
-              <>
+          <Button className="w-full bg-earthquake-accent hover:bg-earthquake-accent/90" onClick={handleSendDonation} disabled={isProcessing || !isCorrectNetwork || parseFloat(balance) < amount}>
+            {isProcessing ? <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Processing...
-              </>
-            ) : (
-              'Send Donation'
-            )}
+              </> : 'Send Donation'}
           </Button>
           
-          {!isCorrectNetwork && (
-            <p className="text-sm text-red-500 text-center">
+          {!isCorrectNetwork && <p className="text-sm text-red-500 text-center">
               Please switch to {networkName} to make a donation.
-            </p>
-          )}
+            </p>}
           
-          {isCorrectNetwork && parseFloat(balance) < amount && (
-            <p className="text-sm text-red-500 text-center">
+          {isCorrectNetwork && parseFloat(balance) < amount && <p className="text-sm text-red-500 text-center">
               Insufficient balance. You need at least {amount} BNB.
-            </p>
-          )}
-        </div>
-      )}
+            </p>}
+        </div>}
       
       <div className="space-y-2">
         <p className="text-sm text-gray-500 font-medium">Alternative method:</p>
         <Label>Send BNB directly to this address:</Label>
         <div className="flex">
-          <Input 
-            value={DONATION_ADDRESS} 
-            readOnly 
-            className="rounded-r-none font-mono text-sm"
-          />
-          <Button 
-            variant="outline" 
-            className="rounded-l-none border-l-0" 
-            onClick={handleCopyAddress}
-          >
+          <Input value={DONATION_ADDRESS} readOnly className="rounded-r-none font-mono text-sm" />
+          <Button variant="outline" className="rounded-l-none border-l-0" onClick={handleCopyAddress}>
             <Copy className="h-4 w-4" />
           </Button>
         </div>
@@ -347,18 +260,11 @@ const DonationForm = () => {
         </div>
       </div>
       
-      <Button 
-        variant="outline" 
-        className="w-full"
-        onClick={() => setStep(DonationStep.FORM)}
-      >
+      <Button variant="outline" className="w-full" onClick={() => setStep(DonationStep.FORM)}>
         Back to donation details
       </Button>
-    </div>
-  );
-  
-  const renderConfirmationStep = () => (
-    <div className="space-y-6">
+    </div>;
+  const renderConfirmationStep = () => <div className="space-y-6">
       <div className="flex justify-center">
         <div className="bg-green-100 p-3 rounded-full">
           <Check className="h-8 w-8 text-green-600" />
@@ -374,24 +280,13 @@ const DonationForm = () => {
         </div>
         <div className="flex justify-between items-center mb-2">
           <span className="font-medium">Status:</span>
-          <span className={`font-medium ${
-            txStatus === 'confirmed' ? 'text-green-600' : 
-            txStatus === 'failed' ? 'text-red-600' : 
-            'text-yellow-600'
-          }`}>
-            {txStatus === 'confirmed' ? 'Confirmed' : 
-             txStatus === 'failed' ? 'Failed' : 
-             'Pending'}
+          <span className={`font-medium ${txStatus === 'confirmed' ? 'text-green-600' : txStatus === 'failed' ? 'text-red-600' : 'text-yellow-600'}`}>
+            {txStatus === 'confirmed' ? 'Confirmed' : txStatus === 'failed' ? 'Failed' : 'Pending'}
           </span>
         </div>
         <div className="flex justify-between items-center">
           <span className="font-medium">Transaction:</span>
-          <a 
-            href={`https://bscscan.com/tx/${txHash}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-earthquake-primary hover:underline flex items-center gap-1"
-          >
+          <a href={`https://bscscan.com/tx/${txHash}`} target="_blank" rel="noopener noreferrer" className="text-earthquake-primary hover:underline flex items-center gap-1">
             <span className="font-mono text-sm">{txHash?.substring(0, 10)}...</span>
             <ExternalLink className="h-3 w-3" />
           </a>
@@ -403,17 +298,11 @@ const DonationForm = () => {
         <p>Your donation will help victims of the 7.7 magnitude earthquake.</p>
       </div>
       
-      <Button
-        onClick={resetForm}
-        className="w-full"
-      >
+      <Button onClick={resetForm} className="w-full">
         Make Another Donation
       </Button>
-    </div>
-  );
-  
-  return (
-    <Card className="w-full max-w-md mx-auto p-6 shadow-lg" id="donate">
+    </div>;
+  return <Card className="w-full max-w-md mx-auto p-6 shadow-lg" id="donate">
       <div className="flex justify-center mb-6">
         <div className="bg-earthquake-primary/10 p-3 rounded-full">
           <Bitcoin className="h-8 w-8 text-earthquake-primary" />
@@ -425,8 +314,6 @@ const DonationForm = () => {
       {step === DonationStep.FORM && renderDonationForm()}
       {step === DonationStep.PAYMENT && renderPaymentStep()}
       {step === DonationStep.CONFIRMATION && renderConfirmationStep()}
-    </Card>
-  );
+    </Card>;
 };
-
 export default DonationForm;
