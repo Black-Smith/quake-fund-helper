@@ -1,17 +1,14 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { HeartHandshake, TrendingUp, Github, ExternalLink, Building, Hospital } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DONATION_ADDRESS } from "@/lib/blockchain";
-
 const TransparencySection = () => {
   const formatAddress = (address: string): string => {
     if (!address) return "";
     return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
   };
-
   return <div className="py-16 bg-white">
       <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-12">
@@ -49,7 +46,7 @@ const TransparencySection = () => {
                     <span className="font-medium">Food & Water</span>
                     <span>18%</span>
                   </div>
-                  <Progress value={18} className="h-2" />
+                  <Progress value={15} className="h-2" />
                 </div>
                 
                 <div className="space-y-2">
@@ -65,7 +62,7 @@ const TransparencySection = () => {
                     <span className="font-medium">Operational Costs</span>
                     <span>2%</span>
                   </div>
-                  <Progress value={2} className="h-2" />
+                  <Progress value={5} className="h-2" />
                 </div>
               </div>
               
@@ -96,7 +93,7 @@ const TransparencySection = () => {
                 </div>
                 <div>
                   <h4 className="font-medium">Infrastructure Support</h4>
-                  <p className="text-sm text-gray-500">Contributing to rebuilding efforts including the damaged Sagaing Bridge and other critical infrastructure.</p>
+                  <p className="text-sm text-gray-500">Contributing to rebuilding efforts including the damaged Ava Bridge and other critical infrastructure.</p>
                 </div>
               </div>
               
@@ -132,5 +129,4 @@ const TransparencySection = () => {
       </div>
     </div>;
 };
-
 export default TransparencySection;

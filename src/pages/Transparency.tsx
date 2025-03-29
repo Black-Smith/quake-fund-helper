@@ -10,7 +10,6 @@ import { useBlockchainData } from '@/hooks/useBlockchainData';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useWallet } from '@/contexts/WalletContext';
-
 const Transparency = () => {
   const {
     address
@@ -19,7 +18,6 @@ const Transparency = () => {
     totalDonations,
     donorCount,
     distributedAmount,
-    distributionCount,
     recentDonations,
     recentDistributions,
     isLoading,
@@ -30,7 +28,6 @@ const Transparency = () => {
   const formatTxHash = (hash: string) => {
     return `${hash.substring(0, 6)}...${hash.substring(hash.length - 4)}`;
   };
-
   return <div className="min-h-screen flex flex-col">
       <Header />
       
@@ -109,7 +106,7 @@ const Transparency = () => {
                 <CardContent>
                   {isLoading ? <Skeleton className="h-9 w-24 mb-2" /> : <div className="text-3xl font-bold mb-2">{distributedAmount} BNB</div>}
                   <div className="flex items-center justify-between">
-                    {isLoading ? <Skeleton className="h-4 w-36" /> : <span className="text-sm text-gray-500">Across {distributionCount} distributions</span>}
+                    {isLoading ? <Skeleton className="h-4 w-36" /> : <span className="text-sm text-gray-500">Across {recentDistributions.length} initiatives</span>}
                     <a href={`https://bscscan.com/address/${DONATION_ADDRESS}`} target="_blank" rel="noopener noreferrer" className="text-earthquake-primary hover:underline text-sm flex items-center gap-1">
                       View all
                       <ExternalLink className="h-3 w-3" />
@@ -163,5 +160,4 @@ const Transparency = () => {
       <Footer />
     </div>;
 };
-
 export default Transparency;
