@@ -43,19 +43,17 @@ const Header = () => {
                 <Button variant="outline" className="flex items-center gap-2 border-earthquake-primary text-earthquake-primary hover:bg-earthquake-primary hover:text-white">
                   <Wallet className="h-4 w-4" />
                   <span>{shortAddress}</span>
-                  <span className="text-sm text-gray-500">{balance} ETH</span>
+                  <span className="text-sm text-gray-500">{balance} BNB</span>
                   <ChevronDown className="h-4 w-4 ml-1" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56">
-                <DropdownMenuLabel className="flex flex-col">
-                  <span>Wallet Connected</span>
-                  {walletType && (
-                    <span className="text-xs font-normal text-gray-500 mt-1">
-                      via {walletType}
-                    </span>
-                  )}
-                </DropdownMenuLabel>
+                <DropdownMenuLabel>Wallet Connected</DropdownMenuLabel>
+                {walletType && (
+                  <DropdownMenuItem className="text-xs text-gray-500 cursor-default">
+                    {walletType}
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="text-destructive focus:text-destructive flex items-center gap-2" onClick={disconnect}>
                   <LogOut className="h-4 w-4" />
@@ -83,7 +81,7 @@ const Header = () => {
           <Link to="/#donate">
             <Button className="flex items-center gap-2 bg-earthquake-accent hover:bg-earthquake-accent/90 text-white">
               <HandCoins className="h-4 w-4" />
-              <span>Donate ETH</span>
+              <span>Donate BNB</span>
             </Button>
           </Link>
         </div>
