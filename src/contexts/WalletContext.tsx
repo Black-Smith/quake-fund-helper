@@ -1,6 +1,5 @@
-
 import React, { createContext, useState, useEffect, useContext } from "react";
-import { connectWallet, isWalletConnected, getWalletBalance, formatAddress } from "@/lib/blockchain";
+import { connectWallet, isWalletConnected, getWalletBalance, formatAddress, WalletProvider } from "@/lib/blockchain";
 
 // Update the WalletContextType type to include event methods
 type WalletContextType = {
@@ -12,19 +11,13 @@ type WalletContextType = {
   connect: () => Promise<void>;
 };
 
-// Define EthereumProvider type separately
-type EthereumProvider = {
-  isMetaMask?: boolean;
-  isTrust?: boolean;
-  request: (args: {method: string; params?: any[]}) => Promise<any>;
-  on: (event: string, handler: (...args: any[]) => void) => void;
-  removeListener: (event: string, handler: (...args: any[]) => void) => void;
-};
+// Remove the EthereumProvider type as we'll use WalletProvider from blockchain.ts
+// No longer needed: type EthereumProvider = { ... }
 
-// Update the global declaration without conflicting with the one in blockchain.ts
+// Update the global declaration to use WalletProvider from blockchain.ts
 declare global {
   interface Window {
-    ethereum?: EthereumProvider;
+    ethereum?: WalletProvider;
   }
 }
 

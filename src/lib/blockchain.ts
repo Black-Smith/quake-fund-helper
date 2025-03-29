@@ -1,4 +1,3 @@
-
 import { toast } from "@/hooks/use-toast";
 
 // Types for wallet connection
@@ -6,8 +5,8 @@ export type WalletProvider = {
   isMetaMask?: boolean;
   isTrust?: boolean;
   request: (args: {method: string; params?: any[]}) => Promise<any>;
-  on?: (event: string, handler: (...args: any[]) => void) => void;
-  removeListener?: (event: string, handler: (...args: any[]) => void) => void;
+  on: (event: string, handler: (...args: any[]) => void) => void;
+  removeListener: (event: string, handler: (...args: any[]) => void) => void;
 };
 
 declare global {
@@ -192,4 +191,3 @@ export const formatAddress = (address: string): string => {
   if (!address) return "";
   return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
 };
-
