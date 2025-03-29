@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -5,6 +6,7 @@ import Hero from '@/components/Hero';
 import DonationForm from '@/components/DonationForm';
 import TransparencySection from '@/components/TransparencySection';
 import EarthquakeInfoSection from '@/components/EarthquakeInfoSection';
+
 const Index = () => {
   return <div className="min-h-screen flex flex-col">
       <Header />

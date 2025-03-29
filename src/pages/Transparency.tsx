@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -10,6 +11,7 @@ import { useBlockchainData } from '@/hooks/useBlockchainData';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useWallet } from '@/contexts/WalletContext';
+
 const Transparency = () => {
   const {
     address
@@ -28,6 +30,7 @@ const Transparency = () => {
   const formatTxHash = (hash: string) => {
     return `${hash.substring(0, 6)}...${hash.substring(hash.length - 4)}`;
   };
+  
   return <div className="min-h-screen flex flex-col">
       <Header />
       
