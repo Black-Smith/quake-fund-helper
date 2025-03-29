@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Earth, HandCoins, Heart, Wallet, ChevronDown, LogOut, AlertTriangle } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -42,6 +42,14 @@ const Header = () => {
     switchNetwork,
     networkName
   } = useWallet();
+
+  // Prompt user to switch networks when detected on the wrong one
+  useEffect(() => {
+    if (isConnected && !isCorrectNetwork) {
+      // We don't auto-switch - just show the UI prompt
+      console.log("Detected user on wrong network");
+    }
+  }, [isConnected, isCorrectNetwork]);
 
   return (
     <header className="sticky top-0 z-50 w-full bg-white border-b shadow-sm">
@@ -107,6 +115,15 @@ const Header = () => {
                     {walletType}
                   </DropdownMenuItem>
                 )}
+                {!isCorrectNetwork && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem className="text-red-500 focus:text-red-500 flex items-center gap-2" onClick={switchNetwork}>
+                      <AlertTriangle className="h-4 w-4" />
+                      <span>Switch to {networkName}</span>
+                    </DropdownMenuItem>
+                  </>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="text-destructive focus:text-destructive flex items-center gap-2" onClick={disconnect}>
                   <LogOut className="h-4 w-4" />
@@ -132,7 +149,10 @@ const Header = () => {
             </Button>
           </Link>
           <Link to="/#donate">
-            <Button className="flex items-center gap-2 bg-earthquake-accent hover:bg-earthquake-accent/90 text-white">
+            <Button 
+              className="flex items-center gap-2 bg-earthquake-accent hover:bg-earthquake-accent/90 text-white"
+              disabled={isConnected && !isCorrectNetwork}
+            >
               <HandCoins className="h-4 w-4" />
               <span>Donate BNB</span>
             </Button>

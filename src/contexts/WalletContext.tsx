@@ -81,14 +81,26 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   // Check network status
   const checkNetworkStatus = async () => {
-    const onCorrectNetwork = await isBscNetwork();
-    setIsCorrectNetwork(onCorrectNetwork);
+    if (isConnected) {
+      const onCorrectNetwork = await isBscNetwork();
+      setIsCorrectNetwork(onCorrectNetwork);
+      
+      if (!onCorrectNetwork) {
+        toast({
+          title: "Wrong Network Detected",
+          description: `Please switch to ${BSC_NETWORK.chainName} to use this application.`,
+          variant: "destructive",
+        });
+      }
+    }
   };
 
   // Switch to BSC network
   const switchNetwork = async () => {
-    await switchToBscNetwork();
-    await checkNetworkStatus();
+    if (isConnected) {
+      await switchToBscNetwork();
+      await checkNetworkStatus();
+    }
   };
 
   // Check if wallet is already connected on mount
@@ -117,19 +129,19 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setIsConnected(false);
         setBalance("0");
         setWalletType(null);
+        setIsCorrectNetwork(false);
       } else {
         setAddress(accounts[0]);
         setIsConnected(true);
         getWalletBalance(accounts[0]).then(bal => setBalance(bal));
         setWalletType(detectWalletType());
+        checkNetworkStatus();
       }
     };
     
     // Listen for network changes
     const handleChainChanged = () => {
       checkNetworkStatus();
-      // Reload the page on chain change as recommended by MetaMask
-      window.location.reload();
     };
     
     if (window.ethereum) {
@@ -137,13 +149,21 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       window.ethereum.on('chainChanged', handleChainChanged);
     }
     
+    // Set up periodic network check (every 10 seconds)
+    const networkCheckInterval = setInterval(() => {
+      if (isConnected) {
+        checkNetworkStatus();
+      }
+    }, 10000);
+    
     return () => {
       if (window.ethereum) {
         window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
         window.ethereum.removeListener('chainChanged', handleChainChanged);
       }
+      clearInterval(networkCheckInterval);
     };
-  }, []);
+  }, [isConnected]);
   
   const connect = async () => {
     setIsConnecting(true);

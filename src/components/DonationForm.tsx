@@ -40,29 +40,14 @@ const DonationForm = () => {
   const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
-    if (!txHash || txStatus === 'confirmed') return;
-    const checkTransactionStatus = async () => {
-      const receipt = await getTransactionReceipt(txHash);
-      if (receipt) {
-        if (receipt.status === '0x1') {
-          setTxStatus('confirmed');
-          toast({
-            title: "Donation Confirmed",
-            description: "Your donation has been confirmed on the blockchain!"
-          });
-        } else if (receipt.status === '0x0') {
-          setTxStatus('failed');
-          toast({
-            title: "Transaction Failed",
-            description: "Your transaction failed. Please try again.",
-            variant: "destructive"
-          });
-        }
-      }
-    };
-    const interval = setInterval(checkTransactionStatus, 5000);
-    return () => clearInterval(interval);
-  }, [txHash, txStatus, toast]);
+    if (isConnected && !isCorrectNetwork && step !== DonationStep.CONFIRMATION) {
+      toast({
+        title: "Network Change Required",
+        description: `Please switch to ${networkName} to make a donation.`,
+        variant: "destructive",
+      });
+    }
+  }, [isConnected, isCorrectNetwork, step, toast, networkName]);
 
   const handleAmountChange = (value: number[]) => {
     setAmount(value[0]);
@@ -78,6 +63,16 @@ const DonationForm = () => {
 
   const handleDonationSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (isConnected && !isCorrectNetwork) {
+      toast({
+        title: "Wrong Network",
+        description: `Please switch to ${networkName} before proceeding.`,
+        variant: "destructive"
+      });
+      return;
+    }
+    
     setStep(DonationStep.PAYMENT);
   };
 
@@ -169,15 +164,32 @@ const DonationForm = () => {
           </div>
         </div>
         
+        {isConnected && !isCorrectNetwork && (
+          <Alert variant="destructive" className="mb-4">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertTitle>Wrong Network</AlertTitle>
+            <AlertDescription className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+              <span>Please switch to {networkName} to proceed.</span>
+              <Button size="sm" variant="outline" onClick={switchNetwork} className="whitespace-nowrap mt-2 sm:mt-0">
+                Switch Network
+              </Button>
+            </AlertDescription>
+          </Alert>
+        )}
         
-        
-        
-        
-        
-        
-        <Button type="submit" className="w-full bg-earthquake-accent hover:bg-earthquake-accent/90">
+        <Button 
+          type="submit" 
+          className="w-full bg-earthquake-accent hover:bg-earthquake-accent/90"
+          disabled={isConnected && !isCorrectNetwork}
+        >
           Continue to Payment
         </Button>
+        
+        {isConnected && !isCorrectNetwork && (
+          <p className="text-sm text-center text-red-500">
+            You must be on {networkName} to proceed
+          </p>
+        )}
       </div>
     </form>;
 
@@ -189,7 +201,9 @@ const DonationForm = () => {
         </div>
         <div className="flex justify-between items-center">
           <span className="font-medium">Network:</span>
-          <span>{networkName}</span>
+          <span className={!isCorrectNetwork ? "text-red-500 font-medium" : ""}>
+            {networkName} {!isCorrectNetwork && "(Required)"}
+          </span>
         </div>
       </div>
 
@@ -198,7 +212,7 @@ const DonationForm = () => {
           <AlertTitle>Wrong Network</AlertTitle>
           <AlertDescription className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <span>Please switch to {networkName} to make a donation.</span>
-            <Button size="sm" variant="outline" onClick={switchNetwork} className="whitespace-nowrap">
+            <Button size="sm" variant="outline" onClick={switchNetwork} className="whitespace-nowrap mt-2 sm:mt-0">
               Switch Network
             </Button>
           </AlertDescription>
@@ -252,10 +266,20 @@ const DonationForm = () => {
         <Label>Send BNB directly to this address:</Label>
         <div className="flex">
           <Input value={DONATION_ADDRESS} readOnly className="rounded-r-none font-mono text-sm" />
-          <Button variant="outline" className="rounded-l-none border-l-0" onClick={handleCopyAddress}>
+          <Button 
+            variant="outline" 
+            className="rounded-l-none border-l-0" 
+            onClick={handleCopyAddress}
+            disabled={isConnected && !isCorrectNetwork}
+          >
             <Copy className="h-4 w-4" />
           </Button>
         </div>
+        {isConnected && !isCorrectNetwork && (
+          <p className="text-xs text-red-500">
+            You must be on {networkName} to use this address for donations
+          </p>
+        )}
       </div>
       
       <div className="bg-yellow-50 border border-yellow-100 rounded-md p-4 text-sm text-yellow-800 flex gap-2">
