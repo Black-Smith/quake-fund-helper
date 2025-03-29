@@ -4,16 +4,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Card } from "@/components/ui/card";
-import { Bitcoin, Copy, AlertCircle, Wallet, Loader2, Check, ExternalLink, AlertTriangle } from "lucide-react";
+import { Copy, AlertCircle, Wallet, Loader2, Check, ExternalLink, AlertTriangle } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useWallet } from "@/contexts/WalletContext";
 import { DONATION_ADDRESS, sendDonation, getTransactionReceipt } from "@/lib/blockchain";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+
 enum DonationStep {
   FORM,
   PAYMENT,
   CONFIRMATION,
 }
+
 const DonationForm = () => {
   const {
     toast
@@ -37,7 +39,6 @@ const DonationForm = () => {
   const [txStatus, setTxStatus] = useState<'pending' | 'confirmed' | 'failed' | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Check transaction status
   useEffect(() => {
     if (!txHash || txStatus === 'confirmed') return;
     const checkTransactionStatus = async () => {
@@ -62,9 +63,11 @@ const DonationForm = () => {
     const interval = setInterval(checkTransactionStatus, 5000);
     return () => clearInterval(interval);
   }, [txHash, txStatus, toast]);
+
   const handleAmountChange = (value: number[]) => {
     setAmount(value[0]);
   };
+
   const handleCopyAddress = () => {
     navigator.clipboard.writeText(DONATION_ADDRESS);
     toast({
@@ -72,13 +75,16 @@ const DonationForm = () => {
       description: "BNB wallet address has been copied to your clipboard."
     });
   };
+
   const handleDonationSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setStep(DonationStep.PAYMENT);
   };
+
   const handleConnectWallet = async () => {
     await connect();
   };
+
   const handleSendDonation = async () => {
     if (!address) {
       toast({
@@ -89,7 +95,6 @@ const DonationForm = () => {
       return;
     }
 
-    // Check if user is on the correct network
     if (!isCorrectNetwork) {
       toast({
         title: "Wrong Network",
@@ -99,7 +104,6 @@ const DonationForm = () => {
       return;
     }
 
-    // Check if user has enough balance
     if (parseFloat(balance) < amount) {
       toast({
         title: "Insufficient balance",
@@ -116,7 +120,6 @@ const DonationForm = () => {
         setTxStatus('pending');
         setStep(DonationStep.CONFIRMATION);
 
-        // Record donation details here if needed
         console.log({
           amount,
           name: name || "Anonymous",
@@ -147,11 +150,13 @@ const DonationForm = () => {
       setIsProcessing(false);
     }
   };
+
   const resetForm = () => {
     setStep(DonationStep.FORM);
     setTxHash(null);
     setTxStatus(null);
   };
+
   const renderDonationForm = () => <form onSubmit={handleDonationSubmit}>
       <div className="space-y-6">
         <div className="space-y-2">
@@ -175,6 +180,7 @@ const DonationForm = () => {
         </Button>
       </div>
     </form>;
+
   const renderPaymentStep = () => <div className="space-y-6">
       <div className="p-4 bg-earthquake-primary/10 rounded-lg">
         <div className="flex justify-between items-center mb-2">
@@ -264,6 +270,7 @@ const DonationForm = () => {
         Back to donation details
       </Button>
     </div>;
+
   const renderConfirmationStep = () => <div className="space-y-6">
       <div className="flex justify-center">
         <div className="bg-green-100 p-3 rounded-full">
@@ -302,10 +309,17 @@ const DonationForm = () => {
         Make Another Donation
       </Button>
     </div>;
+
   return <Card className="w-full max-w-md mx-auto p-6 shadow-lg" id="donate">
       <div className="flex justify-center mb-6">
         <div className="bg-earthquake-primary/10 p-3 rounded-full">
-          <Bitcoin className="h-8 w-8 text-earthquake-primary" />
+          <svg className="h-8 w-8 text-earthquake-primary" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M12 7.5V16.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M7.5 12H16.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M8.5 9L15.5 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M15.5 9L8.5 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
         </div>
       </div>
       
@@ -316,4 +330,5 @@ const DonationForm = () => {
       {step === DonationStep.CONFIRMATION && renderConfirmationStep()}
     </Card>;
 };
+
 export default DonationForm;
