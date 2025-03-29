@@ -54,8 +54,8 @@ type BlockchainStats = {
 const BSCSCAN_API_KEY = "NR1SPC7ZW29P2G27WQH2J4H28GB16P8MNV";
 const BSCSCAN_API_URL = "https://api.bscscan.com/api";
 
-// Start date timestamp - March 29, 2025
-const START_DATE_TIMESTAMP = Math.floor(new Date('2025-03-29T00:00:00Z').getTime() / 1000).toString();
+// Start date timestamp - January 1, 2021
+const START_DATE_TIMESTAMP = Math.floor(new Date('2021-01-01T00:00:00Z').getTime() / 1000).toString();
 
 export const useBlockchainData = (): BlockchainStats => {
   const { address } = useWallet();
