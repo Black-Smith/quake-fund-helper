@@ -1,19 +1,15 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { HeartHandshake, TrendingUp, Github, ExternalLink, Building, Hospital } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DONATION_ADDRESS } from "@/lib/blockchain";
-
 const TransparencySection = () => {
   const formatAddress = (address: string): string => {
     if (!address) return "";
     return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
   };
-
-  return (
-    <div className="py-16 bg-white">
+  return <div className="py-16 bg-white">
       <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-12">
           <h2 className="text-3xl font-bold mb-4">Transparent Fund Management</h2>
@@ -48,7 +44,7 @@ const TransparencySection = () => {
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <span className="font-medium">Food & Water</span>
-                    <span>15%</span>
+                    <span>18%</span>
                   </div>
                   <Progress value={15} className="h-2" />
                 </div>
@@ -64,14 +60,14 @@ const TransparencySection = () => {
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <span className="font-medium">Operational Costs</span>
-                    <span>5%</span>
+                    <span>2%</span>
                   </div>
                   <Progress value={5} className="h-2" />
                 </div>
               </div>
               
               <div className="mt-8 text-sm text-gray-500">
-                <p>* 95% of all donations go directly to relief efforts. 5% is used for operational costs including blockchain fees.</p>
+                <p>* 98% of all donations go directly to relief efforts. 2% is used for operational costs including blockchain fees.</p>
               </div>
             </CardContent>
           </Card>
@@ -112,10 +108,7 @@ const TransparencySection = () => {
               </div>
               
               <div className="flex justify-between items-center">
-                <Button 
-                  className="w-full"
-                  onClick={() => window.open(`https://bscscan.com/address/${DONATION_ADDRESS}`, '_blank')}
-                >
+                <Button className="w-full" onClick={() => window.open(`https://bscscan.com/address/${DONATION_ADDRESS}`, '_blank')}>
                   <span>View Blockchain Records</span>
                   <ExternalLink className="ml-2 h-4 w-4" />
                 </Button>
@@ -124,12 +117,7 @@ const TransparencySection = () => {
               <div className="text-xs text-gray-500 mt-2">
                 <div className="flex items-center justify-between">
                   <span>Contract Address:</span>
-                  <a 
-                    href={`https://bscscan.com/address/${DONATION_ADDRESS}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-earthquake-primary hover:underline flex items-center gap-1"
-                  >
+                  <a href={`https://bscscan.com/address/${DONATION_ADDRESS}`} target="_blank" rel="noopener noreferrer" className="text-earthquake-primary hover:underline flex items-center gap-1">
                     {formatAddress(DONATION_ADDRESS)}
                     <ExternalLink className="h-3 w-3" />
                   </a>
@@ -139,8 +127,6 @@ const TransparencySection = () => {
           </Card>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default TransparencySection;
