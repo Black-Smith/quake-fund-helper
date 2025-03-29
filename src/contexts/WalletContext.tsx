@@ -1,6 +1,14 @@
 
 import React, { createContext, useState, useEffect, useContext } from "react";
-import { connectWallet, isWalletConnected, getWalletBalance, formatAddress, WalletProvider as WalletProviderType } from "@/lib/blockchain";
+import { 
+  connectWallet, 
+  isWalletConnected, 
+  getWalletBalance, 
+  formatAddress, 
+  getWalletProvider,
+  detectWalletType,
+  WalletProvider as WalletProviderType 
+} from "@/lib/blockchain";
 import { toast } from "@/hooks/use-toast";
 
 // Update the WalletContextType type to include disconnect method
@@ -14,13 +22,6 @@ type WalletContextType = {
   disconnect: () => void;
   walletType: string | null;
 };
-
-// Update the global declaration to use WalletProviderType
-declare global {
-  interface Window {
-    ethereum?: WalletProviderType;
-  }
-}
 
 const WalletContext = createContext<WalletContextType>({
   address: null,
@@ -42,39 +43,21 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [isConnecting, setIsConnecting] = useState(false);
   const [walletType, setWalletType] = useState<string | null>(null);
 
-  // Detect wallet type
-  const detectWalletType = () => {
-    if (!window.ethereum) return null;
-    
-    if (window.ethereum.isMetaMask) {
-      return "MetaMask";
-    } else if (window.ethereum.isTrust) {
-      return "Trust Wallet";
-    } else if (window.ethereum.isCoinbaseWallet) {
-      return "Coinbase Wallet";
-    } else if (window.ethereum.isTokenPocket) {
-      return "TokenPocket";
-    } else if (window.ethereum.isMathWallet) {
-      return "Math Wallet";
-    } else if (window.ethereum.isBinanceChainWallet) {
-      return "Binance Wallet";
-    } else {
-      return "Web3 Wallet";
-    }
-  };
-
   // Check if wallet is already connected on mount
   useEffect(() => {
     const checkWallet = async () => {
       const connected = await isWalletConnected();
       if (connected) {
-        const accounts = await window.ethereum?.request({ method: 'eth_accounts' });
-        if (accounts && accounts.length > 0) {
-          setAddress(accounts[0]);
-          setIsConnected(true);
-          const bal = await getWalletBalance(accounts[0]);
-          setBalance(bal);
-          setWalletType(detectWalletType());
+        const provider = getWalletProvider();
+        if (provider) {
+          const accounts = await provider.request({ method: 'eth_accounts' });
+          if (accounts && accounts.length > 0) {
+            setAddress(accounts[0]);
+            setIsConnected(true);
+            const bal = await getWalletBalance(accounts[0]);
+            setBalance(bal);
+            setWalletType(detectWalletType(provider));
+          }
         }
       }
     };
@@ -92,18 +75,20 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setAddress(accounts[0]);
         setIsConnected(true);
         getWalletBalance(accounts[0]).then(bal => setBalance(bal));
-        setWalletType(detectWalletType());
+        const provider = getWalletProvider();
+        setWalletType(detectWalletType(provider));
       }
     };
     
-    if (window.ethereum) {
-      window.ethereum.on('accountsChanged', handleAccountsChanged);
-      window.ethereum.on('chainChanged', () => window.location.reload());
+    const provider = getWalletProvider();
+    if (provider) {
+      provider.on('accountsChanged', handleAccountsChanged);
+      provider.on('chainChanged', () => window.location.reload());
     }
     
     return () => {
-      if (window.ethereum) {
-        window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
+      if (provider) {
+        provider.removeListener('accountsChanged', handleAccountsChanged);
       }
     };
   }, []);
@@ -111,13 +96,13 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const connect = async () => {
     setIsConnecting(true);
     try {
-      const account = await connectWallet();
+      const { address: account, walletType: type } = await connectWallet();
       if (account) {
         setAddress(account);
         setIsConnected(true);
         const bal = await getWalletBalance(account);
         setBalance(bal);
-        setWalletType(detectWalletType());
+        setWalletType(type);
       }
     } catch (error) {
       console.error("Failed to connect wallet:", error);
@@ -126,7 +111,7 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   };
   
-  // Add disconnect method
+  // Disconnect method
   const disconnect = () => {
     try {
       // For most wallets, we can't force disconnect, so we just clear the state

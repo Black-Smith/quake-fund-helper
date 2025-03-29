@@ -48,12 +48,14 @@ const Header = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56">
-                <DropdownMenuLabel>Wallet Connected</DropdownMenuLabel>
-                {walletType && (
-                  <DropdownMenuItem className="text-xs text-gray-500 cursor-default">
-                    {walletType}
-                  </DropdownMenuItem>
-                )}
+                <DropdownMenuLabel className="flex flex-col">
+                  <span>Wallet Connected</span>
+                  {walletType && (
+                    <span className="text-xs font-normal text-gray-500 mt-1">
+                      via {walletType}
+                    </span>
+                  )}
+                </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="text-destructive focus:text-destructive flex items-center gap-2" onClick={disconnect}>
                   <LogOut className="h-4 w-4" />

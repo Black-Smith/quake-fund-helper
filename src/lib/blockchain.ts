@@ -17,6 +17,11 @@ export type WalletProvider = {
 declare global {
   interface Window {
     ethereum?: WalletProvider;
+    BinanceChain?: WalletProvider; // For Binance Chain Wallet
+    trustwallet?: WalletProvider; // For Trust Wallet
+    coinbaseWalletExtension?: WalletProvider; // For Coinbase Wallet
+    tokenpocket?: WalletProvider; // For TokenPocket
+    mathwallet?: WalletProvider; // For MathWallet
   }
 }
 
@@ -36,12 +41,54 @@ export const BSC_NETWORK = {
 // BNB donation address
 export const DONATION_ADDRESS = "0x319A392465c0BFDDB4f8654768cB5095BeC7D88F";
 
+// Get available wallet provider
+export const getWalletProvider = (): WalletProvider | null => {
+  if (window.ethereum) {
+    return window.ethereum;
+  } else if (window.BinanceChain) {
+    return window.BinanceChain;
+  } else if (window.trustwallet) {
+    return window.trustwallet; 
+  } else if (window.coinbaseWalletExtension) {
+    return window.coinbaseWalletExtension;
+  } else if (window.tokenpocket) {
+    return window.tokenpocket;
+  } else if (window.mathwallet) {
+    return window.mathwallet;
+  }
+  return null;
+};
+
+// Detect wallet type
+export const detectWalletType = (provider: WalletProvider | null): string => {
+  if (!provider) return "Unknown";
+  
+  if (provider.isMetaMask) {
+    return "MetaMask";
+  } else if (provider.isTrust) {
+    return "Trust Wallet";
+  } else if (provider.isCoinbaseWallet) {
+    return "Coinbase Wallet";
+  } else if (provider.isTokenPocket) {
+    return "TokenPocket";
+  } else if (provider.isMathWallet) {
+    return "Math Wallet";
+  } else if (provider.isBinanceChainWallet) {
+    return "Binance Wallet";
+  } else if (window.BinanceChain === provider) {
+    return "Binance Wallet";
+  }
+  
+  return "Web3 Wallet";
+};
+
 // Check if wallet is connected
 export const isWalletConnected = async (): Promise<boolean> => {
   try {
-    if (!window.ethereum) return false;
+    const provider = getWalletProvider();
+    if (!provider) return false;
     
-    const accounts = await window.ethereum.request({
+    const accounts = await provider.request({
       method: 'eth_accounts'
     });
     
@@ -53,33 +100,35 @@ export const isWalletConnected = async (): Promise<boolean> => {
 };
 
 // Connect wallet
-export const connectWallet = async (): Promise<string | null> => {
+export const connectWallet = async (): Promise<{address: string | null, walletType: string | null}> => {
   try {
-    if (!window.ethereum) {
+    const provider = getWalletProvider();
+    
+    if (!provider) {
       toast({
-        title: "Wallet not found",
-        description: "Please install MetaMask or another BSC-compatible wallet.",
+        title: "No Wallet Found",
+        description: "Please install MetaMask, Trust Wallet, Binance Wallet, or another compatible wallet.",
         variant: "destructive"
       });
-      return null;
+      return { address: null, walletType: null };
     }
     
     // Request account access
-    const accounts = await window.ethereum.request({
+    const accounts = await provider.request({
       method: 'eth_requestAccounts'
     });
     
     // Switch to BSC network if needed
     try {
-      await window.ethereum.request({
+      await provider.request({
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: BSC_NETWORK.chainId }],
       });
     } catch (switchError: any) {
-      // This error code indicates that the chain has not been added to MetaMask.
+      // This error code indicates that the chain has not been added to the wallet
       if (switchError.code === 4902) {
         try {
-          await window.ethereum.request({
+          await provider.request({
             method: 'wallet_addEthereumChain',
             params: [BSC_NETWORK],
           });
@@ -90,20 +139,24 @@ export const connectWallet = async (): Promise<string | null> => {
             description: "Could not add Binance Smart Chain to your wallet.",
             variant: "destructive"
           });
-          return null;
+          return { address: null, walletType: null };
         }
       }
     }
     
     if (accounts && accounts.length > 0) {
+      const walletType = detectWalletType(provider);
       toast({
-        title: "Wallet Connected",
+        title: `${walletType} Connected`,
         description: "Your wallet has been successfully connected.",
       });
-      return accounts[0];
+      return { 
+        address: accounts[0],
+        walletType
+      };
     }
     
-    return null;
+    return { address: null, walletType: null };
   } catch (error) {
     console.error("Error connecting wallet:", error);
     toast({
@@ -111,16 +164,17 @@ export const connectWallet = async (): Promise<string | null> => {
       description: "Failed to connect wallet. Please try again.",
       variant: "destructive"
     });
-    return null;
+    return { address: null, walletType: null };
   }
 };
 
 // Get wallet balance
 export const getWalletBalance = async (address: string): Promise<string> => {
   try {
-    if (!window.ethereum) return "0";
+    const provider = getWalletProvider();
+    if (!provider) return "0";
     
-    const balance = await window.ethereum.request({
+    const balance = await provider.request({
       method: 'eth_getBalance',
       params: [address, 'latest'],
     });
