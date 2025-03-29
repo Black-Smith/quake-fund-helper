@@ -4,7 +4,6 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Hero from '@/components/Hero';
 import DonationForm from '@/components/DonationForm';
-import ImpactSection from '@/components/ImpactSection';
 import TransparencySection from '@/components/TransparencySection';
 import EarthquakeInfoSection from '@/components/EarthquakeInfoSection';
 
@@ -46,7 +45,6 @@ const Index = () => {
         </section>
         
         <EarthquakeInfoSection />
-        <ImpactSection />
         <TransparencySection />
       </main>
       

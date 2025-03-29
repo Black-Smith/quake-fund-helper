@@ -23,9 +23,6 @@ const Header = () => {
           <Link to="/about" className="text-earthquake-dark hover:text-earthquake-primary transition-colors">
             About
           </Link>
-          <Link to="/impact" className="text-earthquake-dark hover:text-earthquake-primary transition-colors">
-            Impact
-          </Link>
           <Link to="/transparency" className="text-earthquake-dark hover:text-earthquake-primary transition-colors">
             Transparency
           </Link>
