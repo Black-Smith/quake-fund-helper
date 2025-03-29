@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -11,26 +10,25 @@ import { useBlockchainData } from '@/hooks/useBlockchainData';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useWallet } from '@/contexts/WalletContext';
-
 const Transparency = () => {
-  const { address } = useWallet();
-  const { 
-    totalDonations, 
-    donorCount, 
-    distributedAmount, 
-    recentDonations, 
-    recentDistributions, 
-    isLoading, 
-    refreshData 
+  const {
+    address
+  } = useWallet();
+  const {
+    totalDonations,
+    donorCount,
+    distributedAmount,
+    recentDonations,
+    recentDistributions,
+    isLoading,
+    refreshData
   } = useBlockchainData();
-  
+
   // Format the transaction hash for display
   const formatTxHash = (hash: string) => {
     return `${hash.substring(0, 6)}...${hash.substring(hash.length - 4)}`;
   };
-
-  return (
-    <div className="min-h-screen flex flex-col">
+  return <div className="min-h-screen flex flex-col">
       <Header />
       
       <main className="flex-grow">
@@ -41,11 +39,9 @@ const Transparency = () => {
               <p className="text-xl text-gray-300">
                 Full visibility into all donations and disbursements, powered by blockchain technology.
               </p>
-              {address && (
-                <Badge variant="outline" className="mt-4 px-4 py-2 border-earthquake-primary">
+              {address && <Badge variant="outline" className="mt-4 px-4 py-2 border-earthquake-primary bg-slate-600">
                   Connected Wallet: {formatTxHash(address)}
-                </Badge>
-              )}
+                </Badge>}
             </div>
           </div>
         </div>
@@ -53,13 +49,7 @@ const Transparency = () => {
         <div className="py-16">
           <div className="container mx-auto px-4">
             <div className="flex justify-end mb-4">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="flex items-center gap-2"
-                onClick={refreshData}
-                disabled={isLoading}
-              >
+              <Button variant="outline" size="sm" className="flex items-center gap-2" onClick={refreshData} disabled={isLoading}>
                 <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
                 {isLoading ? 'Refreshing...' : 'Refresh Data'}
               </Button>
@@ -76,12 +66,7 @@ const Transparency = () => {
                 <CardContent>
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm text-gray-500">Contract Address:</span>
-                    <a 
-                      href={`https://bscscan.com/address/${DONATION_ADDRESS}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-earthquake-primary hover:underline flex items-center gap-1"
-                    >
+                    <a href={`https://bscscan.com/address/${DONATION_ADDRESS}`} target="_blank" rel="noopener noreferrer" className="text-earthquake-primary hover:underline flex items-center gap-1">
                       {formatTxHash(DONATION_ADDRESS)}
                       <ExternalLink className="h-3 w-3" />
                     </a>
@@ -100,23 +85,10 @@ const Transparency = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {isLoading ? (
-                    <Skeleton className="h-9 w-24 mb-2" />
-                  ) : (
-                    <div className="text-3xl font-bold mb-2">{totalDonations} BNB</div>
-                  )}
+                  {isLoading ? <Skeleton className="h-9 w-24 mb-2" /> : <div className="text-3xl font-bold mb-2">{totalDonations} BNB</div>}
                   <div className="flex items-center justify-between">
-                    {isLoading ? (
-                      <Skeleton className="h-4 w-28" />
-                    ) : (
-                      <span className="text-sm text-gray-500">From {donorCount} donors</span>
-                    )}
-                    <a 
-                      href={`https://bscscan.com/address/${DONATION_ADDRESS}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-earthquake-primary hover:underline text-sm flex items-center gap-1"
-                    >
+                    {isLoading ? <Skeleton className="h-4 w-28" /> : <span className="text-sm text-gray-500">From {donorCount} donors</span>}
+                    <a href={`https://bscscan.com/address/${DONATION_ADDRESS}`} target="_blank" rel="noopener noreferrer" className="text-earthquake-primary hover:underline text-sm flex items-center gap-1">
                       View all
                       <ExternalLink className="h-3 w-3" />
                     </a>
@@ -132,23 +104,10 @@ const Transparency = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {isLoading ? (
-                    <Skeleton className="h-9 w-24 mb-2" />
-                  ) : (
-                    <div className="text-3xl font-bold mb-2">{distributedAmount} BNB</div>
-                  )}
+                  {isLoading ? <Skeleton className="h-9 w-24 mb-2" /> : <div className="text-3xl font-bold mb-2">{distributedAmount} BNB</div>}
                   <div className="flex items-center justify-between">
-                    {isLoading ? (
-                      <Skeleton className="h-4 w-36" />
-                    ) : (
-                      <span className="text-sm text-gray-500">Across {recentDistributions.length} initiatives</span>
-                    )}
-                    <a 
-                      href={`https://bscscan.com/address/${DONATION_ADDRESS}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-earthquake-primary hover:underline text-sm flex items-center gap-1"
-                    >
+                    {isLoading ? <Skeleton className="h-4 w-36" /> : <span className="text-sm text-gray-500">Across {recentDistributions.length} initiatives</span>}
+                    <a href={`https://bscscan.com/address/${DONATION_ADDRESS}`} target="_blank" rel="noopener noreferrer" className="text-earthquake-primary hover:underline text-sm flex items-center gap-1">
                       View all
                       <ExternalLink className="h-3 w-3" />
                     </a>
@@ -162,15 +121,11 @@ const Transparency = () => {
                 <h2 className="text-2xl font-bold mb-6">Recent Donations</h2>
                 <Card>
                   <CardContent className="p-0 overflow-hidden">
-                    {isLoading ? (
-                      <div className="p-6 space-y-3">
+                    {isLoading ? <div className="p-6 space-y-3">
                         <Skeleton className="h-6 w-full" />
                         <Skeleton className="h-6 w-full" />
                         <Skeleton className="h-6 w-full" />
-                      </div>
-                    ) : (
-                      <TransactionTable transactions={recentDonations} type="donation" />
-                    )}
+                      </div> : <TransactionTable transactions={recentDonations} type="donation" />}
                   </CardContent>
                 </Card>
               </div>
@@ -179,15 +134,11 @@ const Transparency = () => {
                 <h2 className="text-2xl font-bold mb-6">Fund Distributions</h2>
                 <Card>
                   <CardContent className="p-0 overflow-hidden">
-                    {isLoading ? (
-                      <div className="p-6 space-y-3">
+                    {isLoading ? <div className="p-6 space-y-3">
                         <Skeleton className="h-6 w-full" />
                         <Skeleton className="h-6 w-full" />
                         <Skeleton className="h-6 w-full" />
-                      </div>
-                    ) : (
-                      <TransactionTable transactions={recentDistributions} type="distribution" />
-                    )}
+                      </div> : <TransactionTable transactions={recentDistributions} type="distribution" />}
                   </CardContent>
                 </Card>
               </div>
@@ -207,8 +158,6 @@ const Transparency = () => {
       </main>
       
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default Transparency;
