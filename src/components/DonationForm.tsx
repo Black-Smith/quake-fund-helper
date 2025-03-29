@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,7 +31,7 @@ const DonationForm = () => {
     switchNetwork,
     networkName
   } = useWallet();
-  const [amount, setAmount] = useState(1);
+  const [amount, setAmount] = useState(0.1);
   const [step, setStep] = useState<DonationStep>(DonationStep.FORM);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -157,10 +158,10 @@ const DonationForm = () => {
         <div className="space-y-2">
           <Label htmlFor="amount">Donation Amount (BNB)</Label>
           <div className="text-3xl font-bold text-center my-2">{amount} BNB</div>
-          <Slider id="amount" min={0.1} max={10} step={0.1} value={[amount]} onValueChange={handleAmountChange} className="my-6" />
+          <Slider id="amount" min={0.01} max={100} step={0.01} value={[amount]} onValueChange={handleAmountChange} className="my-6" />
           <div className="flex justify-between text-sm text-gray-500">
-            <span>0.1 BNB</span>
-            <span>10 BNB</span>
+            <span>0.01 BNB</span>
+            <span>100 BNB</span>
           </div>
         </div>
         
