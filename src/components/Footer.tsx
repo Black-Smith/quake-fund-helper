@@ -1,5 +1,7 @@
+
 import React from 'react';
-import { Earth, Heart, Github, Twitter } from "lucide-react";
+import { Earth, Heart, Github, Facebook } from "lucide-react";
+
 const Footer = () => {
   return <footer className="bg-earthquake-dark text-white py-12">
       <div className="container mx-auto px-4">
@@ -26,9 +28,7 @@ const Footer = () => {
           <div>
             <h3 className="font-semibold text-lg mb-4">Resources</h3>
             <ul className="space-y-2">
-              
               <li><a href="#" className="text-gray-300 hover:text-earthquake-primary transition-colors">Fund Distribution</a></li>
-              
               <li><a href="#" className="text-gray-300 hover:text-earthquake-primary transition-colors">Blockchain Transparency</a></li>
             </ul>
           </div>
@@ -36,14 +36,11 @@ const Footer = () => {
           <div>
             <h3 className="font-semibold text-lg mb-4">Connect</h3>
             <div className="flex space-x-4 mb-4">
-              <a href="#" className="text-gray-300 hover:text-earthquake-primary transition-colors">
-                <Twitter className="h-6 w-6" />
+              <a href="https://www.facebook.com/myancryptocurrency?mibextid=ZbWKwL" className="text-gray-300 hover:text-earthquake-primary transition-colors" target="_blank" rel="noopener noreferrer">
+                <Facebook className="h-6 w-6" />
               </a>
-              <a href="#" className="text-gray-300 hover:text-earthquake-primary transition-colors">
+              <a href="https://github.com/Black-Smith/quake-fund-helper" className="text-gray-300 hover:text-earthquake-primary transition-colors" target="_blank" rel="noopener noreferrer">
                 <Github className="h-6 w-6" />
-              </a>
-              <a href="#" className="text-gray-300 hover:text-earthquake-primary transition-colors">
-                <Heart className="h-6 w-6" />
               </a>
             </div>
             <p className="text-sm text-gray-300">
