@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Card } from "@/components/ui/card";
 import { Copy, AlertCircle, Wallet, Loader2, Check, ExternalLink, AlertTriangle } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { useWallet } from "@/contexts/WalletContext";
 import { DONATION_ADDRESS, sendDonation, getTransactionReceipt } from "@/lib/blockchain";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -170,19 +169,15 @@ const DonationForm = () => {
           </div>
         </div>
         
-        <Button 
-          type="submit" 
-          className="w-full bg-earthquake-accent hover:bg-earthquake-accent/90"
-          disabled={isConnected && !isCorrectNetwork}
-        >
+        
+        
+        
+        
+        
+        
+        <Button type="submit" className="w-full bg-earthquake-accent hover:bg-earthquake-accent/90">
           Continue to Payment
         </Button>
-        
-        {isConnected && !isCorrectNetwork && (
-          <p className="text-xs text-red-500 text-center">
-            Please switch to {networkName} to proceed with donation.
-          </p>
-        )}
       </div>
     </form>;
 
@@ -236,11 +231,7 @@ const DonationForm = () => {
             </p>
           </div>
           
-          <Button 
-            className="w-full bg-earthquake-accent hover:bg-earthquake-accent/90" 
-            onClick={handleSendDonation} 
-            disabled={isProcessing || !isCorrectNetwork || parseFloat(balance) < amount}
-          >
+          <Button className="w-full bg-earthquake-accent hover:bg-earthquake-accent/90" onClick={handleSendDonation} disabled={isProcessing || !isCorrectNetwork || parseFloat(balance) < amount}>
             {isProcessing ? <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Processing...
@@ -261,20 +252,10 @@ const DonationForm = () => {
         <Label>Send BNB directly to this address:</Label>
         <div className="flex">
           <Input value={DONATION_ADDRESS} readOnly className="rounded-r-none font-mono text-sm" />
-          <Button 
-            variant="outline" 
-            className="rounded-l-none border-l-0" 
-            onClick={handleCopyAddress}
-            disabled={isConnected && !isCorrectNetwork}
-          >
+          <Button variant="outline" className="rounded-l-none border-l-0" onClick={handleCopyAddress}>
             <Copy className="h-4 w-4" />
           </Button>
         </div>
-        {isConnected && !isCorrectNetwork && (
-          <p className="text-xs text-red-500">
-            Please switch to {networkName} before copying the donation address.
-          </p>
-        )}
       </div>
       
       <div className="bg-yellow-50 border border-yellow-100 rounded-md p-4 text-sm text-yellow-800 flex gap-2">
