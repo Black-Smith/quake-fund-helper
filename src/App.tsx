@@ -8,7 +8,6 @@ import { WalletProvider } from "@/contexts/WalletContext";
 import Index from "./pages/Index";
 import About from "./pages/About";
 import Transparency from "./pages/Transparency";
-import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,7 +23,6 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/about" element={<About />} />
             <Route path="/transparency" element={<Transparency />} />
-            <Route path="/admin" element={<Admin />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

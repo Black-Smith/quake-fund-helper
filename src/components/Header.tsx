@@ -26,9 +26,6 @@ const Header = () => {
           <Link to="/transparency" className="text-earthquake-dark hover:text-earthquake-primary transition-colors">
             Transparency
           </Link>
-          <Link to="/admin" className="text-earthquake-dark hover:text-earthquake-primary transition-colors">
-            Admin
-          </Link>
         </nav>
 
         <div className="flex items-center space-x-4">
