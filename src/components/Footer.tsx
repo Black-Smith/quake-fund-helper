@@ -26,7 +26,7 @@ const Footer = () => {
           <div>
             <h3 className="font-semibold text-lg mb-4">Resources</h3>
             <ul className="space-y-2">
-              <li><a href="#" className="text-gray-300 hover:text-earthquake-primary transition-colors">BNB Donation Guide</a></li>
+              
               <li><a href="#" className="text-gray-300 hover:text-earthquake-primary transition-colors">Fund Distribution</a></li>
               
               <li><a href="#" className="text-gray-300 hover:text-earthquake-primary transition-colors">Blockchain Transparency</a></li>
