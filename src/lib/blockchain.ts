@@ -29,7 +29,7 @@ export const BSC_NETWORK = {
 };
 
 // BNB donation address
-export const DONATION_ADDRESS = "0x1234567890abcdef1234567890abcdef12345678";
+export const DONATION_ADDRESS = "0x319A392465c0BFDDB4f8654768cB5095BeC7D88F";
 
 // Check if wallet is connected
 export const isWalletConnected = async (): Promise<boolean> => {
