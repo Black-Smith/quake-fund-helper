@@ -1,13 +1,10 @@
-
 import React from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Card, CardContent } from "@/components/ui/card";
 import { HeartHandshake, Users, Flag, Building, Map } from "lucide-react";
-
 const About = () => {
-  return (
-    <div className="min-h-screen flex flex-col">
+  return <div className="min-h-screen flex flex-col">
       <Header />
       
       <main className="flex-grow">
@@ -28,9 +25,7 @@ const About = () => {
               <div>
                 <h2 className="text-3xl font-bold mb-6">Myanmar Earthquake: What We Know</h2>
                 <div className="space-y-4">
-                  <p className="text-gray-600">
-                    The 7.7-magnitude earthquake struck central Myanmar on March 29, 2025, sending shock waves across other parts of Southeast Asia and China and leaving a trail of death and destruction.
-                  </p>
+                  <p className="text-gray-600">The 7.7-magnitude earthquake struck central Myanmar on March 28, 2025, sending shock waves across other parts of Southeast Asia and China and leaving a trail of death and destruction.</p>
                   <p className="text-gray-600">
                     The earthquake's epicenter was near Mandalay, Myanmar's second-largest city, striking at roughly 12:50 p.m. local time. The shallow depth of the quake (only 6 miles) caused violent shaking across the region.
                   </p>
@@ -132,8 +127,6 @@ const About = () => {
       </main>
       
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default About;
