@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { Card } from "@/components/ui/card";
+import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
 import { Copy, AlertCircle, Wallet, Loader2, Check, ExternalLink, AlertTriangle } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useWallet } from "@/contexts/WalletContext";
@@ -164,8 +164,8 @@ const DonationForm = () => {
 
   const renderDonationForm = () => <form onSubmit={handleDonationSubmit}>
       <div className="space-y-6">
-        <div className="space-y-2">
-          <Label htmlFor="amount">Donation Amount (BNB)</Label>
+        <div className="space-y-4">
+          <Label htmlFor="amount" className="text-base font-medium">Donation Amount (BNB)</Label>
           <div className="flex items-center gap-2 mb-2">
             <Input
               type="number"
@@ -175,20 +175,28 @@ const DonationForm = () => {
               min={0.01}
               max={100}
               step={0.01}
-              className="w-full"
+              className="w-full focus:border-earthquake-primary focus:ring-earthquake-primary"
             />
-            <span className="font-medium">BNB</span>
+            <span className="font-medium text-earthquake-primary">BNB</span>
           </div>
-          <div className="text-3xl font-bold text-center my-2">{amount} BNB</div>
-          <Slider id="amount" min={0.01} max={100} step={0.01} value={[amount]} onValueChange={handleAmountChange} className="my-6" />
-          <div className="flex justify-between text-sm text-gray-500">
+          <div className="text-3xl font-bold text-center my-3 text-earthquake-primary">{amount} BNB</div>
+          <Slider 
+            id="amount" 
+            min={0.01} 
+            max={100} 
+            step={0.01} 
+            value={[amount]} 
+            onValueChange={handleAmountChange} 
+            className="my-6"
+          />
+          <div className="flex justify-between text-sm text-gray-600">
             <span>0.01 BNB</span>
             <span>100 BNB</span>
           </div>
         </div>
         
         {isConnected && !isCorrectNetwork && (
-          <Alert variant="destructive" className="mb-4">
+          <Alert variant="destructive" className="mb-4 border-red-300 bg-red-50">
             <AlertTriangle className="h-4 w-4" />
             <AlertTitle>Wrong Network</AlertTitle>
             <AlertDescription className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
@@ -202,7 +210,7 @@ const DonationForm = () => {
         
         <Button 
           type="submit" 
-          className="w-full bg-earthquake-accent hover:bg-earthquake-accent/90"
+          className="w-full bg-earthquake-accent hover:bg-earthquake-accent/90 font-medium text-white py-2.5"
           disabled={isConnected && !isCorrectNetwork}
         >
           Continue to Payment
@@ -217,20 +225,20 @@ const DonationForm = () => {
     </form>;
 
   const renderPaymentStep = () => <div className="space-y-6">
-      <div className="p-4 bg-earthquake-primary/10 rounded-lg">
+      <div className="p-4 bg-earthquake-primary/10 rounded-lg shadow-sm border border-earthquake-primary/20">
         <div className="flex justify-between items-center mb-2">
           <span className="font-medium">Amount:</span>
-          <span className="font-bold">{amount} BNB</span>
+          <span className="font-bold text-earthquake-primary">{amount} BNB</span>
         </div>
         <div className="flex justify-between items-center">
           <span className="font-medium">Network:</span>
-          <span className={!isCorrectNetwork ? "text-red-500 font-medium" : ""}>
+          <span className={!isCorrectNetwork ? "text-red-500 font-medium" : "text-earthquake-primary font-medium"}>
             {networkName} {!isCorrectNetwork && "(Required)"}
           </span>
         </div>
       </div>
 
-      {isConnected && !isCorrectNetwork && <Alert variant="destructive" className="mb-4">
+      {isConnected && !isCorrectNetwork && <Alert variant="destructive" className="mb-4 border-red-300 bg-red-50">
           <AlertTriangle className="h-4 w-4" />
           <AlertTitle>Wrong Network</AlertTitle>
           <AlertDescription className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
@@ -242,9 +250,9 @@ const DonationForm = () => {
         </Alert>}
       
       {!isConnected ? <div className="space-y-4">
-          <div className="text-center">
+          <div className="text-center bg-earthquake-light p-6 rounded-lg border border-earthquake-primary/10">
             <p className="mb-4">Connect your wallet to continue with the donation</p>
-            <Button onClick={handleConnectWallet} disabled={isConnecting} className="mx-auto">
+            <Button onClick={handleConnectWallet} disabled={isConnecting} className="mx-auto bg-earthquake-primary hover:bg-earthquake-primary/90">
               {isConnecting ? <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Connecting...
@@ -255,20 +263,24 @@ const DonationForm = () => {
             </Button>
           </div>
         </div> : <div className="space-y-4">
-          <div className="p-4 bg-green-50 border border-green-100 rounded-lg">
+          <div className="p-4 bg-green-50 border border-green-100 rounded-lg shadow-sm">
             <div className="flex items-center gap-2 text-green-600 mb-2">
               <Check className="h-5 w-5" />
               <span className="font-medium">Wallet Connected</span>
             </div>
             <p className="text-sm text-gray-600">
-              Your wallet <span className="font-mono">{address?.substring(0, 10)}...</span> is ready.
+              Your wallet <span className="font-mono bg-gray-100 px-1 py-0.5 rounded">{address?.substring(0, 10)}...</span> is ready.
             </p>
-            <p className="text-sm font-medium mt-2">
+            <p className="text-sm font-medium mt-2 text-earthquake-primary">
               Available balance: {balance} BNB
             </p>
           </div>
           
-          <Button className="w-full bg-earthquake-accent hover:bg-earthquake-accent/90" onClick={handleSendDonation} disabled={isProcessing || !isCorrectNetwork || parseFloat(balance) < amount}>
+          <Button 
+            className="w-full bg-earthquake-accent hover:bg-earthquake-accent/90 text-white font-medium py-2.5" 
+            onClick={handleSendDonation} 
+            disabled={isProcessing || !isCorrectNetwork || parseFloat(balance) < amount}
+          >
             {isProcessing ? <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Processing...
@@ -284,14 +296,14 @@ const DonationForm = () => {
             </p>}
         </div>}
       
-      <div className="space-y-2">
-        <p className="text-sm text-gray-500 font-medium">Alternative method:</p>
+      <div className="space-y-2 bg-earthquake-light p-4 rounded-lg border border-earthquake-primary/10">
+        <p className="text-sm text-gray-700 font-medium">Alternative method:</p>
         <Label>Send BNB directly to this address:</Label>
         <div className="flex">
-          <Input value={DONATION_ADDRESS} readOnly className="rounded-r-none font-mono text-sm" />
+          <Input value={DONATION_ADDRESS} readOnly className="rounded-r-none font-mono text-sm bg-white border-earthquake-primary/20" />
           <Button 
             variant="outline" 
-            className="rounded-l-none border-l-0" 
+            className="rounded-l-none border-l-0 border-earthquake-primary/20 hover:bg-earthquake-primary/5" 
             onClick={handleCopyAddress}
             disabled={isConnected && !isCorrectNetwork}
           >
@@ -305,7 +317,7 @@ const DonationForm = () => {
         )}
       </div>
       
-      <div className="bg-yellow-50 border border-yellow-100 rounded-md p-4 text-sm text-yellow-800 flex gap-2">
+      <div className="bg-yellow-50 border border-yellow-100 rounded-md p-4 text-sm text-yellow-800 flex gap-2 shadow-sm">
         <AlertCircle className="h-5 w-5 flex-shrink-0" />
         <div>
           <p className="font-medium">Important</p>
@@ -313,7 +325,11 @@ const DonationForm = () => {
         </div>
       </div>
       
-      <Button variant="outline" className="w-full" onClick={() => setStep(DonationStep.FORM)}>
+      <Button 
+        variant="outline" 
+        className="w-full border-earthquake-primary/20 text-earthquake-primary hover:bg-earthquake-primary/5" 
+        onClick={() => setStep(DonationStep.FORM)}
+      >
         Back to donation details
       </Button>
     </div>;
@@ -325,12 +341,12 @@ const DonationForm = () => {
         </div>
       </div>
       
-      <h3 className="text-xl font-bold text-center">Donation Submitted!</h3>
+      <h3 className="text-xl font-bold text-center text-earthquake-primary">Donation Submitted!</h3>
       
-      <div className="p-4 bg-earthquake-primary/10 rounded-lg">
+      <div className="p-4 bg-earthquake-primary/10 rounded-lg shadow-sm border border-earthquake-primary/20">
         <div className="flex justify-between items-center mb-2">
           <span className="font-medium">Amount:</span>
-          <span className="font-bold">{amount} BNB</span>
+          <span className="font-bold text-earthquake-primary">{amount} BNB</span>
         </div>
         <div className="flex justify-between items-center mb-2">
           <span className="font-medium">Status:</span>
@@ -341,24 +357,27 @@ const DonationForm = () => {
         <div className="flex justify-between items-center">
           <span className="font-medium">Transaction:</span>
           <a href={`https://bscscan.com/tx/${txHash}`} target="_blank" rel="noopener noreferrer" className="text-earthquake-primary hover:underline flex items-center gap-1">
-            <span className="font-mono text-sm">{txHash?.substring(0, 10)}...</span>
+            <span className="font-mono text-sm bg-gray-100 px-1 py-0.5 rounded">{txHash?.substring(0, 10)}...</span>
             <ExternalLink className="h-3 w-3" />
           </a>
         </div>
       </div>
       
-      <div className="text-center text-sm text-gray-600">
-        <p>Thank you for your generous support!</p>
-        <p>Your donation will help victims of the 7.7 magnitude earthquake.</p>
+      <div className="text-center p-4 bg-earthquake-light rounded-lg border border-earthquake-primary/10">
+        <p className="text-gray-700 font-medium">Thank you for your generous support!</p>
+        <p className="text-gray-600">Your donation will help victims of the 7.7 magnitude earthquake.</p>
       </div>
       
-      <Button onClick={resetForm} className="w-full">
+      <Button 
+        onClick={resetForm} 
+        className="w-full bg-earthquake-accent hover:bg-earthquake-accent/90 text-white font-medium py-2.5"
+      >
         Make Another Donation
       </Button>
     </div>;
 
-  return <Card className="w-full max-w-md mx-auto p-6 shadow-lg" id="donate">
-      <div className="flex justify-center mb-6">
+  return <Card className="w-full max-w-md mx-auto p-6 shadow-lg bg-white border-earthquake-primary/10" id="donate">
+      <CardHeader className="p-4 flex flex-col items-center space-y-4 pb-2">
         <div className="bg-earthquake-primary/10 p-3 rounded-full">
           <img 
             src="https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/512/Binance-Coin-BNB-icon.png" 
@@ -366,13 +385,14 @@ const DonationForm = () => {
             className="h-12 w-12"
           />
         </div>
-      </div>
+        <h2 className="text-2xl font-bold text-center text-earthquake-primary">Donate BNB</h2>
+      </CardHeader>
       
-      <h2 className="text-2xl font-bold text-center mb-6">Donate BNB</h2>
-      
-      {step === DonationStep.FORM && renderDonationForm()}
-      {step === DonationStep.PAYMENT && renderPaymentStep()}
-      {step === DonationStep.CONFIRMATION && renderConfirmationStep()}
+      <CardContent className="p-4 pt-2">
+        {step === DonationStep.FORM && renderDonationForm()}
+        {step === DonationStep.PAYMENT && renderPaymentStep()}
+        {step === DonationStep.CONFIRMATION && renderConfirmationStep()}
+      </CardContent>
     </Card>;
 };
 
