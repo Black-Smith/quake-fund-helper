@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
-import { MapPin, AlertCircle, Building, Bridge } from "lucide-react";
+import { MapPin, AlertCircle, Building, Landmark } from "lucide-react";
 
 const EarthquakeInfoSection = () => {
   return (
