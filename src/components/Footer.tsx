@@ -1,7 +1,5 @@
-
 import React from 'react';
 import { Earth, Heart, Github, Facebook } from "lucide-react";
-
 const Footer = () => {
   return <footer className="bg-earthquake-dark text-white py-12">
       <div className="container mx-auto px-4">
@@ -43,9 +41,7 @@ const Footer = () => {
                 <Github className="h-6 w-6" />
               </a>
             </div>
-            <p className="text-sm text-gray-300">
-              Contact: support@earthquakerelief.org
-            </p>
+            <p className="text-sm text-gray-300">Contact: earthquakerelife@gmail.com</p>
           </div>
         </div>
         
