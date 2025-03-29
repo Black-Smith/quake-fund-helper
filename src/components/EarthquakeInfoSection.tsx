@@ -67,11 +67,11 @@ const EarthquakeInfoSection = () => {
               <CardContent className="p-0">
                 <div className="grid grid-cols-3 divide-x">
                   <div className="p-4 text-center">
-                    <div className="text-2xl font-bold text-red-600">1,002+</div>
+                    <div className="text-2xl font-bold text-red-600">1,644+</div>
                     <div className="text-xs text-gray-500">Confirmed Deaths</div>
                   </div>
                   <div className="p-4 text-center">
-                    <div className="text-2xl font-bold text-earthquake-primary">2,376+</div>
+                    <div className="text-2xl font-bold text-earthquake-primary">3,408+</div>
                     <div className="text-xs text-gray-500">Injured</div>
                   </div>
                   <div className="p-4 text-center">
