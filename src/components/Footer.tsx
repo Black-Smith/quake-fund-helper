@@ -1,10 +1,7 @@
-
 import React from 'react';
 import { Earth, Heart, Github, Twitter } from "lucide-react";
-
 const Footer = () => {
-  return (
-    <footer className="bg-earthquake-dark text-white py-12">
+  return <footer className="bg-earthquake-dark text-white py-12">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="space-y-4">
@@ -31,7 +28,7 @@ const Footer = () => {
             <ul className="space-y-2">
               <li><a href="#" className="text-gray-300 hover:text-earthquake-primary transition-colors">BNB Donation Guide</a></li>
               <li><a href="#" className="text-gray-300 hover:text-earthquake-primary transition-colors">Fund Distribution</a></li>
-              <li><a href="#" className="text-gray-300 hover:text-earthquake-primary transition-colors">Verification Process</a></li>
+              
               <li><a href="#" className="text-gray-300 hover:text-earthquake-primary transition-colors">Blockchain Transparency</a></li>
             </ul>
           </div>
@@ -60,8 +57,6 @@ const Footer = () => {
           <p className="mt-2">100% of donations go directly to earthquake victims and relief efforts.</p>
         </div>
       </div>
-    </footer>
-  );
+    </footer>;
 };
-
 export default Footer;
