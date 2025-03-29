@@ -155,39 +155,30 @@ export const useBlockchainData = (): BlockchainStats => {
       const incomingData: BscScanResponse = await incomingResponse.json();
 
       if (incomingData.status === "1") {
-        const transactions = incomingData.result;
+        // Filter transactions to include only direct transfers (sent or received)
+        const allTransactions = incomingData.result;
         
-        // Apply start date filter to ensure we're only processing transactions after March 29, 2025
-        const filteredTransactions = transactions.filter(tx => 
-          parseInt(tx.timeStamp) >= parseInt(START_DATE_TIMESTAMP)
+        // Apply start date filter and filter for only valid transactions
+        const filteredTransactions = allTransactions.filter(tx => 
+          parseInt(tx.timeStamp) >= parseInt(START_DATE_TIMESTAMP) && 
+          tx.isError === "0"
         );
         
-        setTotalDonations(calculateTotalDonations(filteredTransactions));
-        setDonorCount(getUniqueDonorsCount(filteredTransactions));
-        setRecentDonations(convertToTransactions(filteredTransactions));
-        
-        // Get outgoing transactions (distributions) from the start date
-        const outgoingResponse = await fetch(
-          `${BSCSCAN_API_URL}?module=account&action=txlist&address=${DONATION_ADDRESS}&startblock=0&endblock=99999999&page=1&offset=100&starttime=${START_DATE_TIMESTAMP}&endtime=9999999999&sort=desc&apikey=${BSCSCAN_API_KEY}`
+        // Separate incoming and outgoing transactions
+        const incomingTransactions = filteredTransactions.filter(tx => 
+          tx.to.toLowerCase() === DONATION_ADDRESS.toLowerCase()
         );
         
-        if (!outgoingResponse.ok) {
-          throw new Error(`BSCScan API responded with status: ${outgoingResponse.status}`);
-        }
+        const outgoingTransactions = filteredTransactions.filter(tx => 
+          tx.from.toLowerCase() === DONATION_ADDRESS.toLowerCase()
+        );
         
-        const outgoingData: BscScanResponse = await outgoingResponse.json();
-        
-        if (outgoingData.status === "1") {
-          // Apply start date filter to ensure we're only processing transactions after March 29, 2025
-          const filteredOutgoingTransactions = outgoingData.result.filter(tx => 
-            parseInt(tx.timeStamp) >= parseInt(START_DATE_TIMESTAMP)
-          );
-          
-          setDistributedAmount(calculateDistributedAmount(filteredOutgoingTransactions));
-          setRecentDistributions(convertToDistributions(filteredOutgoingTransactions));
-        } else {
-          throw new Error(`BSCScan API error: ${outgoingData.message}`);
-        }
+        // Update state with calculated values
+        setTotalDonations(calculateTotalDonations(incomingTransactions));
+        setDonorCount(getUniqueDonorsCount(incomingTransactions));
+        setRecentDonations(convertToTransactions(incomingTransactions));
+        setDistributedAmount(calculateDistributedAmount(outgoingTransactions));
+        setRecentDistributions(convertToDistributions(outgoingTransactions));
       } else {
         throw new Error(`BSCScan API error: ${incomingData.message}`);
       }
