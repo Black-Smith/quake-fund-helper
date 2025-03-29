@@ -2,6 +2,7 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
 import { connectWallet, isWalletConnected, getWalletBalance, formatAddress } from "@/lib/blockchain";
 
+// Update the WalletProvider type to include event methods
 type WalletContextType = {
   address: string | null;
   shortAddress: string;
@@ -10,6 +11,22 @@ type WalletContextType = {
   isConnecting: boolean;
   connect: () => Promise<void>;
 };
+
+// Extend the WalletProvider type to include event methods
+type EthereumProvider = {
+  isMetaMask?: boolean;
+  isTrust?: boolean;
+  request: (args: {method: string; params?: any[]}) => Promise<any>;
+  on: (event: string, handler: (...args: any[]) => void) => void;
+  removeListener: (event: string, handler: (...args: any[]) => void) => void;
+};
+
+// Update the global declaration
+declare global {
+  interface Window {
+    ethereum?: EthereumProvider;
+  }
+}
 
 const WalletContext = createContext<WalletContextType>({
   address: null,
